@@ -1,48 +1,44 @@
-// export type OfflineContentMetadata = {
-//   guid: string;
-//   url: string;
-//   title: string;
-//   duration: number;
-//   thumbnail: string;
-// };
+import ReactNative from 'react-native';
 
-// export class AngelOfflineContentManager {
-//   getOfflineOptionsForContent({
-//     guid,
-//     url,
-//     title,
-//     duration,
-//     thumbnail,
-//   }: OfflineContentMetadata) {
-//     /**
-//      * store full OfflineContentMetadata, this is the source object that is required for all other operations
-//      * optimistically store it.
-//      * returns a list of audio languages if multiple are available
-//      */
-//   }
+const { AngelOfflineModule } = ReactNative.NativeModules;
 
-//   onAppStart() {}
+export type OfflineContentMetadata = {
+  guid: string;
+  url: string;
+  title: string;
+  duration: number;
+  thumbnail: string;
+};
 
-//   onAppPause() {
-//     this.deactivateOfflineContent();
-//   }
+export class AngelOfflineVideoModule {
+  getOfflineOptionsForContent(
+    metadata: OfflineContentMetadata
+  ): Promise<{ id: string; title: string }> {
+    return AngelOfflineModule.requestOfflineContent(metadata);
+  }
 
-//   onAppResume() {
-//     this.activateOfflineContent();
-//   }
-//   /**
-//    * run the progress
-//    *
-//    */
-//   storeContentForOfflineViewing({
-//     _guid,
-//     _cb,
-//   }: {
-//     _guid: string;
-//     _cd: (progress: number, isComplete: boolean, error?: any) => void;
-//   }) {}
+  onAppStart() {}
 
-//   private deactivateOfflineContent() {}
+  onAppPause() {
+    this.deactivateOfflineContent();
+  }
 
-//   private activateOfflineContent() {}
-// }
+  onAppResume() {
+    this.activateOfflineContent();
+  }
+  /**
+   * run the progress
+   *
+   */
+  //   storeContentForOfflineViewing({
+  //     _guid,
+  //     _cb,
+  //   }: {
+  //     _guid: string;
+  //     _cb: (progress: number, isComplete: boolean, error?: any) => void;
+  //   }) {}
+
+  private deactivateOfflineContent() {}
+
+  private activateOfflineContent() {}
+}
