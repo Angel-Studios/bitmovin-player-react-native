@@ -17,12 +17,13 @@ class RNPlayerViewPackage : ReactPackage {
      */
     override fun createNativeModules(reactContext: ReactApplicationContext): MutableList<NativeModule> {
         return mutableListOf(
+            AngelOfflineModule(reactContext),
             UuidModule(reactContext),
             PlayerModule(reactContext),
             SourceModule(reactContext),
             DrmModule(reactContext),
             RNPlayerViewManager(reactContext),
-            RNSubtitleViewManager(reactContext)
+            RNSubtitleViewManager(reactContext),
         )
     }
 

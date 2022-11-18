@@ -56,28 +56,36 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
 
     @ReactMethod
     fun requestOfflineContent(watchable: ReadableMap, promise: Promise) {
-        val url = watchable.getString("url")
-        val guid = watchable.getString("guid")
-        if(url.isNullOrBlank() || guid.isNullOrBlank()) {
-            promise.reject("Bitmovin", "url or guid not provided")
-            return
+        try {
+            val url = watchable.getString("url")
+            val guid = watchable.getString("guid")
+            if(url.isNullOrBlank() || guid.isNullOrBlank()) {
+                promise.reject("Bitmovin", "url or guid not provided")
+                return
+            }
+
+            val source = SourceConfig(
+                url,
+                SourceType.Hls
+            )
+            source.title = watchable.getString("title")
+            source.metadata = mapOf("guid" to guid)
+            val offlineManager = OfflineContentManager.getOfflineContentManager(
+                source,
+                cacheDir.path, guid, this, context
+            )
+            offlineManagers[guid] = OfflineItem(guid, source, offlineManager)
+            //store Promise, need to wait for async return of available downloadable options
+            promiseCache[guid] = promise
+
+            offlineManager.getOptions()
         }
-
-        val source = SourceConfig(
-            url,
-            SourceType.Hls
-        )
-        source.title = watchable.getString("title")
-        source.metadata = mapOf("guid" to guid)
-        val offlineManager = OfflineContentManager.getOfflineContentManager(
-            source,
-            cacheDir.path, guid, this, context
-        )
-        offlineManagers[guid] = OfflineItem(guid, source, offlineManager)
-        //store Promise, need to wait for async return of available downloadable options
-        promiseCache[guid] = promise
-
-        offlineManager.getOptions()
+        catch (e: Exception) {
+            promise.reject("requestOfflineContent", e.localizedMessage)
+        }
+        finally {
+            val test = 1
+        }
     }
 
     override fun onOptionsAvailable(source: SourceConfig?, offlineOptions: OfflineContentOptions?) {

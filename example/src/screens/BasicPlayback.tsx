@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
-import { View, Platform, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   Event,
   usePlayer,
   PlayerView,
   SourceType,
+  AngelOfflineVideoModule,
 } from 'bitmovin-player-react-native';
 import { useTVGestures } from '../hooks';
 
@@ -20,12 +21,21 @@ export default function BasicPlayback() {
 
   useFocusEffect(
     useCallback(() => {
+      AngelOfflineVideoModule.getOfflineOptionsForContent({
+        guid: '1234',
+        title: 'test',
+        url: 'https://media.angelstudios.com/copied-from-old-account/The_Chosen/S01E08_with_CTA/2022-07-29/The_Chosen_S01E08.m3u8',
+      })
+        .then((v) => {
+          console.log(v);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
+
       player.load({
-        url:
-          Platform.OS === 'ios'
-            ? 'https://bitmovin-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8'
-            : 'https://bitmovin-a.akamaihd.net/content/MI201109210084_1/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd',
-        type: Platform.OS === 'ios' ? SourceType.HLS : SourceType.DASH,
+        url: 'https://media.angelstudios.com/copied-from-old-account/The_Chosen/S01E08_with_CTA/2022-07-29/The_Chosen_S01E08.m3u8',
+        type: SourceType.HLS,
         title: 'Art of Motion',
         poster:
           'https://bitmovin-a.akamaihd.net/content/MI201109210084_1/poster.jpg',

@@ -1,29 +1,27 @@
-import ReactNative from 'react-native';
+import { NativeModules } from 'react-native';
 
-const { AngelOfflineModule } = ReactNative.NativeModules;
+const AngelOfflineModule = NativeModules.AngelOfflineModule;
 
 export type OfflineContentMetadata = {
   guid: string;
   url: string;
   title: string;
-  duration: number;
-  thumbnail: string;
 };
 
 export class AngelOfflineVideoModule {
-  getOfflineOptionsForContent(
+  static getOfflineOptionsForContent(
     metadata: OfflineContentMetadata
   ): Promise<{ id: string; title: string }> {
     return AngelOfflineModule.requestOfflineContent(metadata);
   }
 
-  onAppStart() {}
+  static onAppStart() {}
 
-  onAppPause() {
+  static onAppPause() {
     this.deactivateOfflineContent();
   }
 
-  onAppResume() {
+  static onAppResume() {
     this.activateOfflineContent();
   }
   /**
@@ -38,7 +36,7 @@ export class AngelOfflineVideoModule {
   //     _cb: (progress: number, isComplete: boolean, error?: any) => void;
   //   }) {}
 
-  private deactivateOfflineContent() {}
+  private static deactivateOfflineContent() {}
 
-  private activateOfflineContent() {}
+  private static activateOfflineContent() {}
 }
