@@ -1515,20 +1515,27 @@ declare type OfflineContentMetadata = {
     url: string;
     title: string;
 };
+declare type DwonloadEvent = {
+    guid: string;
+    progress: number;
+    isComplete: boolean;
+    error?: any;
+};
 declare class AngelOfflineVideoModule {
-    static getOfflineOptionsForContent(metadata: OfflineContentMetadata): Promise<{
+    private static eventEmitterListenerRef;
+    private static callbacks;
+    static startEventListeners(): void;
+    static stopEventListeners(): void;
+    static getOfflineOptionsForContent(metadata: OfflineContentMetadata): Promise<[{
         id: string;
         title: string;
-    }>;
+    }]>;
+    static downloadContentForOfflineViewing(guid: string, audioTrackId: string, cb: (event: DwonloadEvent) => void): any;
     static onAppStart(): void;
     static onAppPause(): void;
     static onAppResume(): void;
-    /**
-     * run the progress
-     *
-     */
     private static deactivateOfflineContent;
     private static activateOfflineContent;
 }
 
-export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AngelOfflineVideoModule, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, BasePlayerViewProps, BaseSubtitleViewProps, DestroyEvent, Drm, DrmConfig, DurationChangedEvent, ErrorEvent, Event, EventSource, FairplayConfig, LoadingState, MutedEvent, OfflineContentMetadata, PausedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, ScalingMode, SeekEvent, SeekedEvent, SideLoadedSubtitleTrack, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, SubtitleView, SubtitleViewProps, TemporaryAngelAdConfig, TimeChangedEvent, UnmutedEvent, UserInterfaceType, VideoPlaybackQualityChangedEvent, VideoSizeChangedEvent, WidevineConfig, usePlayer };
+export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AngelOfflineVideoModule, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, BasePlayerViewProps, BaseSubtitleViewProps, DestroyEvent, Drm, DrmConfig, DurationChangedEvent, DwonloadEvent, ErrorEvent, Event, EventSource, FairplayConfig, LoadingState, MutedEvent, OfflineContentMetadata, PausedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, ScalingMode, SeekEvent, SeekedEvent, SideLoadedSubtitleTrack, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, SubtitleView, SubtitleViewProps, TemporaryAngelAdConfig, TimeChangedEvent, UnmutedEvent, UserInterfaceType, VideoPlaybackQualityChangedEvent, VideoSizeChangedEvent, WidevineConfig, usePlayer };

@@ -107,12 +107,13 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
                 ?.sortedBy { it.bitrate }
                 ?.chunked(offlineManager.offlineContentOptions?.videoOptions?.size ?: 1)
                 ?.firstOrNull()
-                ?.lastOrNull()
+                ?.firstOrNull()
                 ?.id
 
             offlineManager?.offlineContentOptions?.videoOptions?.forEach {
-                if(it.id == selectedVideoId)
-                it.action = OfflineOptionEntryAction.Download
+                if(it.id == selectedVideoId) {
+                    it.action = OfflineOptionEntryAction.Download
+                }
             }
 
             val optionsRef = offlineManager?.offlineContentOptions
