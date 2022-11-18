@@ -11,6 +11,7 @@ import SubtitlePlayback from './screens/SubtitlePlayback';
 import ProgrammaticTrackSelection from './screens/ProgrammaticTrackSelection';
 import CustomPlaybackForm from './screens/CustomPlaybackForm';
 import CustomPlayback from './screens/CustomPlayback';
+import OfflinePlayback from './screens/OfflinePlayback';
 
 export type RootStackParamsList = {
   ExamplesList: {
@@ -23,6 +24,7 @@ export type RootStackParamsList = {
   BasicDrmPlayback: undefined;
   SubtitlePlayback: undefined;
   CustomPlaybackForm: undefined;
+  OfflinePlayback: undefined;
   CustomPlayback: {
     licenseKey: string;
     streamURL: string;
@@ -77,6 +79,10 @@ export default function App() {
                 title: 'Programmatic Track Selection',
                 routeName: 'ProgrammaticTrackSelection',
               },
+              {
+                title: 'Offline playback',
+                routeName: 'OfflinePlayback',
+              },
             ],
           }}
         />
@@ -94,6 +100,11 @@ export default function App() {
           name="SubtitlePlayback"
           component={SubtitlePlayback}
           options={{ title: 'Subtitle and captions' }}
+        />
+        <RootStack.Screen
+          name="OfflinePlayback"
+          component={OfflinePlayback}
+          options={{ title: 'Offline Playback' }}
         />
         <RootStack.Screen
           name="ProgrammaticTrackSelection"
