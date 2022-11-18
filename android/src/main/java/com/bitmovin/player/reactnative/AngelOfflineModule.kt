@@ -83,8 +83,45 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
         catch (e: Exception) {
             promise.reject("requestOfflineContent", e.localizedMessage)
         }
-        finally {
-            val test = 1
+    }
+
+    @ReactMethod
+    fun downloadOfflineContent(guid: String, audioTrackId: String, promise: Promise) {
+        try {
+            val offlineManager = offlineManagers[guid]
+
+            //mark users selected audio track for download
+            offlineManager?.offlineContentOptions?.audioOptions?.forEach {
+                if(it.id == audioTrackId) {
+                    it.action = OfflineOptionEntryAction.Download
+                }
+            }
+
+            //download all subtitle tracks
+            offlineManager?.offlineContentOptions?.textOptions?.forEach {
+                it.action = OfflineOptionEntryAction.Download
+            }
+
+            val selectedVideoId = offlineManager?.offlineContentOptions?.videoOptions
+                ?.sortedBy { it.bitrate }
+                ?.chunked(offlineManager.offlineContentOptions?.videoOptions?.size ?: 1)
+                ?.firstOrNull()
+                ?.lastOrNull()
+                ?.id
+
+            offlineManager?.offlineContentOptions?.videoOptions?.forEach {
+                if(it.id == selectedVideoId)
+                it.action = OfflineOptionEntryAction.Download
+            }
+
+
+
+            offlineManager?.offlineContentOptions?.let {
+                offlineManager.offlineContentManager?.process(it)
+            }
+        }
+        catch (e: Exception) {
+            promise.reject("offline video", "encountered an error trying to download content")
         }
     }
 
@@ -94,8 +131,10 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
         val output = Arguments.createArray()
         offlineOptions?.audioOptions?.forEach {
             val map = Arguments.createMap()
-            if(it.id != null && it.language != null) {
-                map.putString(it.id!!, it.language)
+            if(it.id != null) {
+                map.putString("title", it.id!!.replace("aud:", ""))
+                map.putString("id", it.id!!)
+
             }
             output.pushMap(map)
         }

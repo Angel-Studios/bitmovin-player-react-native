@@ -15,6 +15,16 @@ export class AngelOfflineVideoModule {
     return AngelOfflineModule.requestOfflineContent(metadata);
   }
 
+  // static downloadContentForOfflineViewing(
+  //   guid: string,
+  //   audioTrackId: string,
+  //   cb: (progress: number, isComplete: boolean, error: any) => void
+  // ) {}
+
+  // static pauseContentDownload(guid: string) {}
+
+  // static resumeContentDownload(guid: string) {}
+
   static onAppStart() {}
 
   static onAppPause() {
