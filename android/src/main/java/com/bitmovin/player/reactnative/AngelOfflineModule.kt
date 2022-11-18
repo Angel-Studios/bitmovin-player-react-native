@@ -114,10 +114,13 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
                 it.action = OfflineOptionEntryAction.Download
             }
 
-
-
-            offlineManager?.offlineContentOptions?.let {
-                offlineManager.offlineContentManager?.process(it)
+            val optionsRef = offlineManager?.offlineContentOptions
+            if(optionsRef != null) {
+                offlineManager.offlineContentManager.process(optionsRef)
+                promise.resolve(true)
+            }
+            else {
+                promise.reject("offline video", "could not start download of content for $guid")
             }
         }
         catch (e: Exception) {
