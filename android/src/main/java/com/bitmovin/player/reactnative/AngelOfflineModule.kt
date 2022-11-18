@@ -10,6 +10,7 @@ import com.bitmovin.player.api.source.SourceConfig
 import com.bitmovin.player.api.source.SourceType
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.modules.core.DeviceEventManagerModule
 
 @ReactModule(name = AngelOfflineModule.name)
 class AngelOfflineModule(private val context: ReactApplicationContext): ReactContextBaseJavaModule(context),
@@ -155,13 +156,25 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
     }
 
     override fun onProgress(source: SourceConfig?, progress: Float) {
-        TODO("Not yet implemented")
+        val guid = source?.metadata?.get("guid")
+        val manager = offlineManagers[guid]
+        val oldProgress = manager?.progress
+        manager?.progress = progress
+
+        if (oldProgress?.toInt() != progress.toInt()) {
+            val params = Arguments.createMap().apply {
+                putString("guid", guid)
+                putDouble("progress", progress.toDouble())
+                putBoolean("isComplete", progress == 1F)
+            }
+            context
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                .emit("DownloadEvent", params)
+        }
     }
 
-
-
     override fun onDrmLicenseUpdated(source: SourceConfig?) {
-        TODO("Not yet implemented")
+        // TBD
     }
 
     override fun onSuspended(source: SourceConfig?) {

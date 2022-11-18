@@ -16,7 +16,7 @@ export type DwonloadEvent = {
   guid: string;
   progress: number;
   isComplete: boolean;
-  error: any;
+  error?: any;
 };
 
 export class AngelOfflineVideoModule {
