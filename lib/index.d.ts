@@ -1517,25 +1517,49 @@ declare type OfflineContentMetadata = {
 };
 declare type DwonloadEvent = {
     guid: string;
+    currentState: 'completed' | 'suspended' | 'resumed' | 'error' | 'inProgress';
     progress: number;
-    isComplete: boolean;
-    error?: any;
+    error?: string;
 };
 declare class AngelOfflineVideoModule {
     private static eventEmitterListenerRef;
     private static callbacks;
+    /**
+     * when entering UI that manages downloads start the event listener
+     */
     static startEventListeners(): void;
+    /**
+     * when leaving a download managing view, stop the listeners
+     */
     static stopEventListeners(): void;
+    /**
+     *  start by calling this function to get a list of available languages for download, video quality is automatically selected, and all subtitle tracks are automatically downloaded
+     */
     static getOfflineOptionsForContent(metadata: OfflineContentMetadata): Promise<[{
         id: string;
         title: string;
     }]>;
+    /**
+     * downloads a given audio track (implicitly downloading related video and subtitles tracks)
+     */
     static downloadContentForOfflineViewing(guid: string, audioTrackId: string, cb: (event: DwonloadEvent) => void): any;
-    static onAppStart(): void;
-    static onAppPause(): void;
-    static onAppResume(): void;
-    private static deactivateOfflineContent;
-    private static activateOfflineContent;
+    /**
+     * Resume content download for given content guid
+     */
+    static resumeDownload(guid: string): Promise<boolean>;
+    /**
+     * pause content download for given content guid
+     */
+    static suspendDownload(guid: string): Promise<boolean>;
+    /**
+     * delete content download for given content guid
+     */
+    static deleteDownload(guid: string): Promise<boolean>;
+    /**
+     * call on app start and resume. Initializes the native objects needed to operate offline playback
+     */
+    static onAppStart(storedMetadata: Array<OfflineContentMetadata>): Promise<boolean>;
+    static onAppPause(): Promise<boolean>;
 }
 
 export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AngelOfflineVideoModule, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, BasePlayerViewProps, BaseSubtitleViewProps, DestroyEvent, Drm, DrmConfig, DurationChangedEvent, DwonloadEvent, ErrorEvent, Event, EventSource, FairplayConfig, LoadingState, MutedEvent, OfflineContentMetadata, PausedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, ScalingMode, SeekEvent, SeekedEvent, SideLoadedSubtitleTrack, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, SubtitleView, SubtitleViewProps, TemporaryAngelAdConfig, TimeChangedEvent, UnmutedEvent, UserInterfaceType, VideoPlaybackQualityChangedEvent, VideoSizeChangedEvent, WidevineConfig, usePlayer };
