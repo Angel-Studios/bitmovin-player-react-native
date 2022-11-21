@@ -150,6 +150,24 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
         }
     }
 
+    @ReactMethod
+    fun deleteDownloadForContent(guid: String) {
+        val manager = offlineManagers[guid]
+        manager?.offlineContentManager?.deleteAll()
+    }
+
+    @ReactMethod
+    fun suspendDownloadForContent(guid: String) {
+        val manager = offlineManagers[guid]
+        manager?.offlineContentManager?.suspend()
+    }
+
+    @ReactMethod
+    fun resumeDownloadForContent(guid: String) {
+        val manager = offlineManagers[guid]
+        manager?.offlineContentManager?.resume()
+    }
+
     override fun onOptionsAvailable(source: SourceConfig?, offlineOptions: OfflineContentOptions?) {
         try {
             val guid = source?.metadata?.get("guid")

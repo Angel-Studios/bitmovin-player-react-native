@@ -74,8 +74,8 @@ export class AngelOfflineVideoModule {
   /**
    * pause content download for given content guid
    */
-  static pauseDownload(guid: string): Promise<boolean> {
-    return AngelOfflineModule.pauseDownloadForContent(guid);
+  static suspendDownload(guid: string): Promise<boolean> {
+    return AngelOfflineModule.suspendDownloadForContent(guid);
   }
 
   /**
