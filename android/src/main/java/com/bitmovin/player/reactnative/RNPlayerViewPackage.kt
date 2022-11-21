@@ -23,7 +23,7 @@ class RNPlayerViewPackage : ReactPackage {
             SourceModule(reactContext),
             DrmModule(reactContext),
             RNPlayerViewManager(reactContext),
-            RNSubtitleViewManager(reactContext),
+            RNSubtitleViewManager(reactContext)
         )
     }
 
