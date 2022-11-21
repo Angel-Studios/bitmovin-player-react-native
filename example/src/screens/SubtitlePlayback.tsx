@@ -17,9 +17,7 @@ function prettyPrint(header: string, obj: any) {
 export default function SubtitlePlayback() {
   useTVGestures();
 
-  const player = usePlayer({
-    licenseKey: '4766495e-67aa-4c7e-9992-5b70675b0660',
-  });
+  const player = usePlayer();
 
   useFocusEffect(
     useCallback(() => {

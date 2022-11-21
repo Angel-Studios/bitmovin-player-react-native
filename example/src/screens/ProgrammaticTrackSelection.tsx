@@ -32,9 +32,7 @@ const Separator = () => <View style={styles.separator} />;
 export default function ProgrammaticTrackSelection() {
   useTVGestures();
 
-  const player = usePlayer({
-    licenseKey: '4766495e-67aa-4c7e-9992-5b70675b0660',
-  });
+  const player = usePlayer();
   const [tracks, setTracks] = useState<TrackDisplay[]>([]);
 
   useFocusEffect(
