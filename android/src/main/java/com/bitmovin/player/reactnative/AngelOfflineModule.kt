@@ -151,19 +151,19 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
     }
 
     @ReactMethod
-    fun deleteDownloadForContent(guid: String) {
+    fun deleteDownloadForContent(guid: String, promise: Promise) {
         val manager = offlineManagers[guid]
         manager?.offlineContentManager?.deleteAll()
     }
 
     @ReactMethod
-    fun suspendDownloadForContent(guid: String) {
+    fun suspendDownloadForContent(guid: String, promise: Promise) {
         val manager = offlineManagers[guid]
         manager?.offlineContentManager?.suspend()
     }
 
     @ReactMethod
-    fun resumeDownloadForContent(guid: String) {
+    fun resumeDownloadForContent(guid: String, promise: Promise) {
         val manager = offlineManagers[guid]
         manager?.offlineContentManager?.resume()
     }
