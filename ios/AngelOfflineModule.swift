@@ -33,11 +33,11 @@ class AngelOfflineModule: NSObject, RCTBridgeModule {
     static var resolveCache: [String: RCTPromiseResolveBlock] = [:]
     static var rejectCache: [String: RCTPromiseRejectBlock] = [:]
     
-    /// Memory is automatically managed and this function is necessary for the Android side of things
     @objc func releaseOfflineManagers(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock){
+        AngelOfflineModule.resolveCache = [:]
+        AngelOfflineModule.rejectCache = [:]
         resolve(true)
     }
-    
     
     @objc func requestOfflineContent(_ watchable: Any?, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock){
         do {
@@ -63,7 +63,6 @@ class AngelOfflineModule: NSObject, RCTBridgeModule {
             guard let src = sourceConfig else {
                 let error = NSError()
                 reject("AngelOfflineModule", "Could not create source config", error)
-                
                 return
             }
                 
@@ -115,29 +114,24 @@ class AngelOfflineModule: NSObject, RCTBridgeModule {
         let averageBitrateFor720p = 3000 as NSNumber
         downloadConfig.minimumBitrate = averageBitrateFor720p
         offlineItem.offlineContentManager.download(tracks: tracksSelection, downloadConfig: downloadConfig)
-        
     }
     
     @objc func deleteDownloadForContent(_ guid: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock){
    
-        
     }
+    
     @objc func suspendDownloadForContent(_ guid: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock){
    
-        
     }
+    
     @objc func resumeDownloadForContent(_ guid: String){
    
-        
     }
-    
-   
-    
 }
 
 extension AngelOfflineModule: OfflineContentManagerListener {
     func onAvailableTracksFetched(_ event: BitmovinPlayer.AvailableTracksFetchedEvent, offlineContentManager: OfflineContentManager){
-        print("WASABI onAvailableTracksFetched start")
+        print("WASABI onAvailableTracksFetched start on class")
 
         let guid = offlineContentManager.sourceConfig.metadata["guid"] as! String
         let resolve = AngelOfflineModule.resolveCache[guid]
