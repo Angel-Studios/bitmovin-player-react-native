@@ -6,11 +6,20 @@
 //
 
 import Foundation
+import BitmovinPlayer
 
 struct Watchable:Codable {
     var guid: String
     var url: String
     var title: String
+}
+
+struct OfflineItem {
+    var guid: String
+    var sourceConfig: SourceConfig
+    var offlineContentManager: OfflineContentManager
+    var progress: Int
+    var offlineTracks: OfflineTrackSelection?
 }
 
 extension RCTConvert {
@@ -19,17 +28,7 @@ extension RCTConvert {
             return nil
         }
         do {
-            var watchable = try Watchable(from: <#Decoder#>)
-            if let guid = json["guid"] as? String {
-                watchable.guid = guid
-            }
-            if let url = json["url"] as? String {
-                watchable.url = url
-            }
-            if let title = json["title"] as? String {
-                watchable.title = title
-            }
-            return watchable
+            return Watchable(guid: json["guid"] as! String, url: json["url"] as! String, title: json["title"] as! String)
         } catch {
             print(error)
         }

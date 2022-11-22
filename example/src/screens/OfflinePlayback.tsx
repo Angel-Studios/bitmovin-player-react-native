@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Platform, StyleSheet, Button } from 'react-native';
+import { View, Platform, StyleSheet, Button, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   Event,
@@ -13,7 +13,6 @@ import {
   OfflineContentMetadata,
   DwonloadEvent,
 } from '../../../src/angelOfflineVideoModule';
-import { Picker } from '@react-native-picker/picker';
 
 function prettyPrint(header: string, obj: any) {
   console.log(header, JSON.stringify(obj, null, 2));
@@ -70,7 +69,10 @@ export default function OfflinePlayback() {
   };
 
   const handleDownloadOptionsPress = () => {
-    if (!offlineOptions) return;
+    if (!offlineOptions) {
+      Alert.alert('No options available');
+      return;
+    }
     setShowOptions(!showOptions);
   };
 
@@ -95,19 +97,14 @@ export default function OfflinePlayback() {
       />
       {showOptions ? (
         <View style={{ flex: 1, width: '100%', backgroundColor: 'white' }}>
-          <Picker
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue) => setSelectedLanguage(itemValue)}
-            itemStyle={{ color: 'white' }}
-          >
-            {offlineOptions?.map((audioTrack) => (
-              <Picker.Item
-                key={audioTrack.id}
-                label={audioTrack.title}
-                value={audioTrack.id}
-              />
-            ))}
-          </Picker>
+          {offlineOptions?.map((audioTrack) => (
+            <Button
+              key={audioTrack.id}
+              title={audioTrack.title}
+              color={selectedLanguage === audioTrack.id ? 'gray' : 'blue'}
+              onPress={() => setSelectedLanguage(audioTrack.id)}
+            />
+          ))}
           <Button title="Download Now" onPress={handleDownloadPress} />
         </View>
       ) : (
