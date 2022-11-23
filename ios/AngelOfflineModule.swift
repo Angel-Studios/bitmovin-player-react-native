@@ -16,6 +16,9 @@ import BitmovinPlayer
 
 @objc(AngelOfflineModule)
 class AngelOfflineModule: NSObject, RCTBridgeModule {
+    
+    private let offlineManager = OfflineManager.sharedInstance()
+    
     /// React bridge reference.
     @objc var bridge: RCTBridge!
     
@@ -66,7 +69,6 @@ class AngelOfflineModule: NSObject, RCTBridgeModule {
                 return
             }
                 
-            let offlineManager = OfflineManager.sharedInstance()
             let offlineContentManager = try offlineManager.offlineContentManager(for: src)
             offlineContentManager.add(listener: self)
             let offlineItem = OfflineItem(guid: guid, sourceConfig: src, offlineContentManager: offlineContentManager, progress: 0, offlineTracks: nil)
