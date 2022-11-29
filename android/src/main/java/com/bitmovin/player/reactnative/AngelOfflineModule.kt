@@ -8,6 +8,8 @@ import com.bitmovin.player.api.offline.OfflineContentManagerListener
 import com.bitmovin.player.api.offline.OfflineSourceConfig
 import com.bitmovin.player.api.offline.options.OfflineContentOptions
 import com.bitmovin.player.api.offline.options.OfflineOptionEntryAction
+import com.bitmovin.player.api.offline.options.OfflineOptionEntryState
+import com.bitmovin.player.api.offline.options.VideoOfflineOptionEntry
 import com.bitmovin.player.api.source.SourceConfig
 import com.bitmovin.player.api.source.SourceType
 import com.facebook.react.bridge.*
@@ -102,6 +104,30 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
         }
     }
 
+    /**
+     * returns string disjunct union one of ::
+     * Downloaded | Downloading | Deleting | Suspended | NotDownloaded | Failed | Unknown
+     */
+    @ReactMethod
+    fun getOfflineStateForVideoContent(guid: String, promise: Promise) {
+        try {
+            val offlineManager = offlineManagers[guid]
+
+            val selectedVideoId = offlineManager?.offlineContentOptions?.videoOptions?.let {
+                getMidGradeBitrateStream(it)
+            }
+
+            val option = offlineManager?.offlineContentOptions?.videoOptions?.find {
+                it.id === selectedVideoId
+            }
+            
+            promise.resolve(option?.state ?: "Unknown")
+        }
+        catch (e: Exception) {
+            promise.reject("Angel Offline Module", "could fetch offline state for content $guid")
+        }
+    }
+
     @ReactMethod
     fun downloadOfflineContent(guid: String, audioTrackId: String, promise: Promise) {
         try {
@@ -121,12 +147,9 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
                 it.action = OfflineOptionEntryAction.Download
             }
 
-            val selectedVideoId = offlineManager?.offlineContentOptions?.videoOptions
-                ?.sortedBy { it.bitrate }
-                ?.chunked((offlineManager.offlineContentOptions?.videoOptions?.size ?: 1)/2)
-                ?.firstOrNull()
-                ?.lastOrNull()
-                ?.id
+            val selectedVideoId = offlineManager?.offlineContentOptions?.videoOptions?.let {
+                getMidGradeBitrateStream(it)
+            }
 
             offlineManager?.offlineContentOptions?.videoOptions?.forEach {
                 it.action = null
@@ -166,6 +189,15 @@ class AngelOfflineModule(private val context: ReactApplicationContext): ReactCon
     fun resumeDownloadForContent(guid: String, promise: Promise) {
         val manager = offlineManagers[guid]
         manager?.offlineContentManager?.resume()
+    }
+
+    private fun getMidGradeBitrateStream(videoOptions:  List<VideoOfflineOptionEntry>): String? {
+        return videoOptions
+            .sortedBy { it.bitrate }
+            .chunked((videoOptions.size).div(2))
+            .firstOrNull()
+            ?.lastOrNull()
+            ?.id
     }
 
     override fun onOptionsAvailable(source: SourceConfig?, offlineOptions: OfflineContentOptions?) {
