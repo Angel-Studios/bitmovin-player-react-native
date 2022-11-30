@@ -81,6 +81,7 @@ export class AngelOfflineVideoModule {
       return this.asyncStorageRef
         .getItem(listOfContentStorageKey)
         .then((v) => (v ? JSON.parse(v) : []))
+        .then((v: Record<string, OfflineContentMetadata>) => Object.values(v))
         .catch((e) =>
           Promise.reject(`failed to parse offline content metadata ${e}`)
         );
@@ -94,6 +95,12 @@ export class AngelOfflineVideoModule {
    */
   static getOfflineOptionsForContent(
     metadata: OfflineContentMetadata
+  ): Promise<[{ id: string; title: string }]> {
+    return AngelOfflineModule.requestOfflineContent(metadata);
+  }
+
+  static getOfflineOptionsForListOfContent(
+    metadata: Array<OfflineContentMetadata>
   ): Promise<[{ id: string; title: string }]> {
     return AngelOfflineModule.requestOfflineContent(metadata);
   }
