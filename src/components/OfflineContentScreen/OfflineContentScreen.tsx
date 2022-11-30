@@ -3,10 +3,13 @@ import { FlatList, Pressable, SafeAreaView, Text, View } from 'react-native';
 
 export const OfflineContentScreen = ({
   onContentSelected,
+  headerText = 'Offline Content',
 }: {
+  headerText?: string;
   onContentSelected: (guid?: string) => void;
 }) => {
   const [offlineItems, setOfflineItems] = useState<Array<unknown>>();
+
   useEffect(() => {
     setOfflineItems([]);
   }, [offlineItems]);
@@ -14,7 +17,7 @@ export const OfflineContentScreen = ({
   return (
     <SafeAreaView>
       <View>
-        <Text>Header</Text>
+        <Text>{headerText}</Text>
       </View>
       <FlatList data={[]} renderItem={OfflineContentItem(onContentSelected)} />
     </SafeAreaView>

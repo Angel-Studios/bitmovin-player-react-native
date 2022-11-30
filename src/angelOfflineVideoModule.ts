@@ -19,10 +19,43 @@ export type DwonloadEvent = {
   error?: string;
 };
 
+type AsyncStorageTypeRef = {
+  getItem: (key: string) => Promise<string | null>;
+  setItem: (key: string, value: string) => Promise<void>;
+  removeItem: (key: string) => Promise<void>;
+  mergeItem: (key: string, value: string) => Promise<void>;
+  clear: () => Promise<void>;
+  getAllKeys: () => Promise<readonly string[]>;
+  flushGetRequests: () => void;
+  multiGet: (
+    keys: readonly string[]
+  ) => Promise<readonly [string, string | null][]>;
+  multiSet: (keyValuePairs: [string, string][]) => Promise<void>;
+  multiRemove: (keys: readonly string[]) => Promise<void>;
+  multiMerge: (keyValuePairs: [string, string][]) => Promise<void>;
+};
+
+const listOfContentStorageKey = 'bitmovinOfflineContentMetadata';
+
 export class AngelOfflineVideoModule {
+  /**
+   * Reference to React Native Async Storage
+   */
+  private static asyncStorageRef: AsyncStorageTypeRef | null = null;
+
+  /**
+   * React native event listener reference
+   */
   private static eventEmitterListenerRef: EmitterSubscription | null = null;
 
+  /**
+   * callback references for updating UI state for a given content keyed on GUID
+   */
   private static callbacks: Record<string, (event: DwonloadEvent) => void> = {};
+
+  static setAsyncStorageInstance(async: AsyncStorageTypeRef) {
+    this.asyncStorageRef = async;
+  }
 
   /**
    * when entering UI that manages downloads start the event listener
@@ -41,6 +74,19 @@ export class AngelOfflineVideoModule {
   static stopEventListeners() {
     this.callbacks = {};
     this.eventEmitterListenerRef?.remove();
+  }
+
+  static listAvailableOfflineContent(): Promise<Array<OfflineContentMetadata>> {
+    if (this.asyncStorageRef) {
+      return this.asyncStorageRef
+        .getItem(listOfContentStorageKey)
+        .then((v) => (v ? JSON.parse(v) : []))
+        .catch((e) =>
+          Promise.reject(`failed to parse offline content metadata ${e}`)
+        );
+    } else {
+      return Promise.reject('Async storage reference not found');
+    }
   }
 
   /**
