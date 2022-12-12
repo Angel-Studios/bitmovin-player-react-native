@@ -6,4 +6,6 @@ export * from './player';
 export * from './source';
 export * from './subtitleTrack';
 export * from './styleConfig';
-export * from './angelOfflineVideoModule';
+export * from './offlineContentOptions';
+export * from './offlineContentManager';
+export * from './offlineContentManagerListener';

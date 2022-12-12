@@ -12,6 +12,7 @@ import com.bitmovin.player.api.event.SourceEvent
 import com.bitmovin.player.api.event.data.SeekPosition
 import com.bitmovin.player.api.media.audio.AudioTrack
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
+import com.bitmovin.player.api.offline.options.*
 import com.bitmovin.player.api.source.Source
 import com.bitmovin.player.api.source.SourceConfig
 import com.bitmovin.player.api.source.SourceType
@@ -55,7 +56,7 @@ class JsonConverter {
                     playerConfig.tweaksConfig = it
                 }
             }
-            if(json.hasKey("tempAngelAdConfig")) {
+            if (json.hasKey("tempAngelAdConfig")) {
                 toTempAngelAdConfig(json.getMap("tempAngelAdConfig"))?.let {
                     playerConfig.advertisingConfig = it
                 }
@@ -142,7 +143,8 @@ class JsonConverter {
                 tweaksConfig.timeChangedInterval = json.getDouble("timeChangedInterval")
             }
             if (json.hasKey("bandwidthEstimateWeightLimit")) {
-                tweaksConfig.bandwidthEstimateWeightLimit = json.getInt("bandwidthEstimateWeightLimit")
+                tweaksConfig.bandwidthEstimateWeightLimit =
+                    json.getInt("bandwidthEstimateWeightLimit")
             }
             if (json.hasKey("devicesThatRequireSurfaceWorkaround")) {
                 val devices = json.getMap("devicesThatRequireSurfaceWorkaround")
@@ -159,22 +161,28 @@ class JsonConverter {
                 tweaksConfig.devicesThatRequireSurfaceWorkaround = deviceNames + modelNames
             }
             if (json.hasKey("languagePropertyNormalization")) {
-                tweaksConfig.languagePropertyNormalization = json.getBoolean("languagePropertyNormalization")
+                tweaksConfig.languagePropertyNormalization =
+                    json.getBoolean("languagePropertyNormalization")
             }
             if (json.hasKey("localDynamicDashWindowUpdateInterval")) {
-                tweaksConfig.localDynamicDashWindowUpdateInterval = json.getDouble("localDynamicDashWindowUpdateInterval")
+                tweaksConfig.localDynamicDashWindowUpdateInterval =
+                    json.getDouble("localDynamicDashWindowUpdateInterval")
             }
             if (json.hasKey("shouldApplyTtmlRegionWorkaround")) {
-                tweaksConfig.shouldApplyTtmlRegionWorkaround = json.getBoolean("shouldApplyTtmlRegionWorkaround")
+                tweaksConfig.shouldApplyTtmlRegionWorkaround =
+                    json.getBoolean("shouldApplyTtmlRegionWorkaround")
             }
             if (json.hasKey("useDrmSessionForClearPeriods")) {
-                tweaksConfig.useDrmSessionForClearPeriods = json.getBoolean("useDrmSessionForClearPeriods")
+                tweaksConfig.useDrmSessionForClearPeriods =
+                    json.getBoolean("useDrmSessionForClearPeriods")
             }
             if (json.hasKey("useDrmSessionForClearSources")) {
-                tweaksConfig.useDrmSessionForClearSources = json.getBoolean("useDrmSessionForClearSources")
+                tweaksConfig.useDrmSessionForClearSources =
+                    json.getBoolean("useDrmSessionForClearSources")
             }
             if (json.hasKey("useFiletypeExtractorFallbackForHls")) {
-                tweaksConfig.useFiletypeExtractorFallbackForHls = json.getBoolean("useFiletypeExtractorFallbackForHls")
+                tweaksConfig.useFiletypeExtractorFallbackForHls =
+                    json.getBoolean("useFiletypeExtractorFallbackForHls")
             }
             return tweaksConfig
         }
@@ -298,7 +306,7 @@ class JsonConverter {
                 json.putMap("oldSubtitleTrack", fromSubtitleTrack(event.oldSubtitleTrack))
                 json.putMap("newSubtitleTrack", fromSubtitleTrack(event.newSubtitleTrack))
             }
-            if(event is SourceEvent.DurationChanged) {
+            if (event is SourceEvent.DurationChanged) {
                 json.putDouble("duration", event.to)
             }
             return json
@@ -633,5 +641,70 @@ class JsonConverter {
             }
             return mimeType.split("/").last()
         }
+
+        /**
+         * Converts any `OfflineOptionEntry` into its json representation.
+         * @param offlineEntry `OfflineOptionEntry` object to be converted.
+         * @return The generated json map.
+         */
+        @JvmStatic
+        fun toJson(offlineEntry: OfflineOptionEntry): WritableMap {
+            return Arguments.createMap().apply {
+                putString("id", offlineEntry.id)
+                putInt("bitrate", offlineEntry.bitrate)
+                putString("mimeType", offlineEntry.mimeType)
+                putString("codecs", offlineEntry.codecs)
+                putString("language", offlineEntry.language)
+                putString("state", offlineEntry.state.name)
+                putString("action", offlineEntry.action?.name)
+            }
+        }
+
+        /**
+         * Converts any `OfflineContentOptions` into its json representation.
+         * @param options `OfflineContentOptions` object to be converted.
+         * @return The generated json map.
+         */
+        @JvmStatic
+        fun toJson(options: OfflineContentOptions?): WritableMap? {
+            if (options == null) {
+                return null
+            }
+
+            val videoOptions = Arguments.createArray()
+            options.videoOptions.forEach {
+                videoOptions.pushMap(toJson(it).apply {
+                    putInt("width", it.width)
+                    putInt("height", it.height)
+                    putDouble("frameRate", it.frameRate.toDouble())
+                })
+            }
+
+            val audioOptions = Arguments.createArray()
+            options.audioOptions.forEach {
+                audioOptions.pushMap(toJson(it).apply {
+                    putInt("channelCount", it.channelCount)
+                    putInt("sampleRate", it.sampleRate)
+                })
+            }
+
+            val textOptions = Arguments.createArray()
+            options.textOptions.forEach {
+                textOptions.pushMap(toJson(it))
+            }
+
+            var thumbnailOption: WritableMap? = null
+            if (options.thumbnailOption != null) {
+                thumbnailOption = toJson(options.thumbnailOption!!)
+            }
+
+            return Arguments.createMap().apply {
+                putArray("videoOptions", videoOptions)
+                putArray("audioOptions", audioOptions)
+                putArray("textOptions", textOptions)
+                putMap("thumbnailOption", thumbnailOption)
+            }
+        }
+
     }
 }
