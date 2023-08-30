@@ -2184,16 +2184,6 @@ declare class OfflineContentManager extends NativeInstance<OfflineContentConfig>
 }
 
 /**
- * Contains config values which can be used for altering network requests
- */
-interface NetworkConfig {
-    /**
-     * Sets the values during the pre-processing of requests
-     */
-    preprocessHttpRequestCallback?: string;
-}
-
-/**
  * Object used to configure a new `Player` instance.
  */
 interface PlayerConfig extends NativeInstanceConfig {
@@ -2236,10 +2226,6 @@ interface PlayerConfig extends NativeInstanceConfig {
      * Configures analytics functionality.
      */
     analyticsConfig?: AnalyticsConfig;
-    /**
-     * Configures network capabilities
-     */
-    netConfig?: NetworkConfig;
 }
 /**
  * Configures the playback behaviour of the player.
@@ -2703,4 +2689,4 @@ declare function SubtitleView(props: SubtitleViewProps): JSX.Element | null;
  */
 declare function usePlayer(config?: PlayerConfig): Player;
 
-export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AdvertisingConfig, AnalyticsCollector, AnalyticsConfig, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, AudioSession, AudioSessionCategory, AudioTrack, BasePlayerViewProps, BaseSubtitleViewProps, BitmovinNativeOfflineEventData, CdnProvider, CustomDataConfig, CustomMessageHandler, DestroyEvent, Drm, DrmConfig, DrmLicenseInformation, DurationChangedEvent, ErrorEvent, Event, EventSource, FairplayConfig, FullscreenDisabledEvent, FullscreenEnabledEvent, FullscreenEnterEvent, FullscreenExitEvent, FullscreenHandler, LoadingState, MutedEvent, NativePlayerViewEvents, NetworkConfig, OfflineContentConfig, OfflineContentManager, OfflineContentManagerListener, OfflineContentOptions, OfflineDownloadRequest, OfflineEvent, OfflineEventType, OfflineOptionEntry, OfflineOptionEntryState, OfflineSourceOptions, OnCanceledEvent, OnCompletedEvent, OnDrmLicenseExpiredEvent, OnDrmLicenseUpdatedEvent, OnErrorEvent, OnOptionsAvailableEvent, OnProgressEvent, OnResumedEvent, OnSuspendedEvent, PausedEvent, PictureInPictureAvailabilityChangedEvent, PictureInPictureEnterEvent, PictureInPictureEnteredEvent, PictureInPictureExitEvent, PictureInPictureExitedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewEvents, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, ScalingMode, SeekEvent, SeekedEvent, SideLoadedSubtitleTrack, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceMetadata, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, SubtitleView, SubtitleViewProps, TimeChangedEvent, TimeShiftEvent, TimeShiftedEvent, TypefaceFamily, TypefaceStyleWeight, UnmutedEvent, UserInterfaceType, VideoPlaybackQualityChangedEvent, VideoSizeChangedEvent, WidevineConfig, handleBitmovinNativeOfflineEvent, usePlayer };
+export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AdvertisingConfig, AnalyticsCollector, AnalyticsConfig, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, AudioSession, AudioSessionCategory, AudioTrack, BasePlayerViewProps, BaseSubtitleViewProps, BitmovinNativeOfflineEventData, CdnProvider, CustomDataConfig, CustomMessageHandler, DestroyEvent, Drm, DrmConfig, DrmLicenseInformation, DurationChangedEvent, ErrorEvent, Event, EventSource, FairplayConfig, FullscreenDisabledEvent, FullscreenEnabledEvent, FullscreenEnterEvent, FullscreenExitEvent, FullscreenHandler, LoadingState, MutedEvent, NativePlayerViewEvents, OfflineContentConfig, OfflineContentManager, OfflineContentManagerListener, OfflineContentOptions, OfflineDownloadRequest, OfflineEvent, OfflineEventType, OfflineOptionEntry, OfflineOptionEntryState, OfflineSourceOptions, OnCanceledEvent, OnCompletedEvent, OnDrmLicenseExpiredEvent, OnDrmLicenseUpdatedEvent, OnErrorEvent, OnOptionsAvailableEvent, OnProgressEvent, OnResumedEvent, OnSuspendedEvent, PausedEvent, PictureInPictureAvailabilityChangedEvent, PictureInPictureEnterEvent, PictureInPictureEnteredEvent, PictureInPictureExitEvent, PictureInPictureExitedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewEvents, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, ScalingMode, SeekEvent, SeekedEvent, SideLoadedSubtitleTrack, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceMetadata, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, SubtitleView, SubtitleViewProps, TimeChangedEvent, TimeShiftEvent, TimeShiftedEvent, TypefaceFamily, TypefaceStyleWeight, UnmutedEvent, UserInterfaceType, VideoPlaybackQualityChangedEvent, VideoSizeChangedEvent, WidevineConfig, handleBitmovinNativeOfflineEvent, usePlayer };

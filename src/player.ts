@@ -9,7 +9,6 @@ import { StyleConfig } from './styleConfig';
 import { TweaksConfig } from './tweaksConfig';
 import { OfflineContentManager } from './offline/offlineContentManager';
 import { OfflineSourceOptions } from './offline/offlineContentOptions';
-import { NetworkConfig } from './networkConfig';
 
 const PlayerModule = NativeModules.PlayerModule;
 
@@ -56,10 +55,6 @@ export interface PlayerConfig extends NativeInstanceConfig {
    * Configures analytics functionality.
    */
   analyticsConfig?: AnalyticsConfig;
-  /**
-   * Configures network capabilities
-   */
-  netConfig?: NetworkConfig;
 }
 
 /**

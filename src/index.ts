@@ -10,7 +10,6 @@ export * from './player';
 export * from './source';
 export * from './subtitleTrack';
 export * from './styleConfig';
-export * from './networkConfig';
 export * from './ui';
 export * from './offline/offlineContentOptions';
 export * from './offline/offlineContentManager';
