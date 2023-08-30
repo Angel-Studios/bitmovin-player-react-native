@@ -1,5 +1,6 @@
 import Foundation
 import BitmovinPlayer
+import BitmovinCore
 import BitmovinCollector
 
 extension RCTConvert {
