@@ -53,9 +53,9 @@ extension RCTConvert {
     * @returns: NetworkConfig object
     */
     static func networkConfig(_ json: Any?) -> NetworkConfig? {
-        guard let json = json as? [String: Any?] else {
-            return nil
-        }
+        // guard let json = json as? [String: Any?] else {
+        //     return nil
+        // }
         let networkConfig = NetworkConfig()
         // if let preprocessHttpRequestCallback = json["preprocessHttpRequestVars"] as? String {
         //     let requestPromise = preprocessHttpRequestProxy(preprocessHttpRequestCallback)
