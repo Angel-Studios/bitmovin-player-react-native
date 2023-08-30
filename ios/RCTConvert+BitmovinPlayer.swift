@@ -55,6 +55,7 @@ extension RCTConvert {
         }
         let networkConfig = NetworkConfig()
         if let preprocessHttpRequestCallback = json["preprocessHttpRequestVars"] as? String {
+            let preprocessHttpRequestDelegate: PreprocessHttpRequestDelegate
             func preprocessHttpRequest(_ type: String, httpRequest: HttpRequest, completionHandler: @escaping (_ httpRequest: HttpRequest) -> Void) {
                 completionHandler(httpRequest)
             }
