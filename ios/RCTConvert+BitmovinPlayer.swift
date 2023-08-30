@@ -29,9 +29,9 @@ extension RCTConvert {
         if let advertisingConfig = RCTConvert.advertisingConfig(json["advertisingConfig"]) {
             playerConfig.advertisingConfig = advertisingConfig
         }
-        if let networkConfig = RCTConvert.networkConfig(json["netConfig"]) {
-            playerConfig.networkConfig = networkConfig
-        }
+        // if let networkConfig = RCTConvert.networkConfig(json["netConfig"]) {
+        //     playerConfig.networkConfig = networkConfig
+        // }
         return playerConfig
     }
 
@@ -56,7 +56,7 @@ extension RCTConvert {
         // guard let json = json as? [String: Any?] else {
         //     return nil
         // }
-        let networkConfig = NetworkConfig()
+        // let networkConfig = NetworkConfig()
         // if let preprocessHttpRequestCallback = json["preprocessHttpRequestVars"] as? String {
         //     let requestPromise = preprocessHttpRequestProxy(preprocessHttpRequestCallback)
         //     networkConfig = NetworkConfig(
@@ -64,7 +64,8 @@ extension RCTConvert {
         //         preprocessHttpResponseCallback: nil
         //     )
         // }
-        return networkConfig
+        // return networkConfig
+        return nil
     }
 
     /**
