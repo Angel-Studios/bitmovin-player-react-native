@@ -55,7 +55,7 @@ extension RCTConvert {
         }
         let networkConfig = NetworkConfig()
         if let preprocessHttpRequestCallback = json["preprocessHttpRequestVars"] as? String {
-            func preprocessHttpRequest(_ type: String, httpRequest: String, completionHandler: @escaping (_ httpRequest: String) -> Void) {
+            func preprocessHttpRequest(_ type: String, httpRequest: HttpRequest, completionHandler: @escaping (_ httpRequest: HttpRequest) -> Void) {
                 completionHandler(httpRequest)
             }
             // @objc(BMPPreprocessHttpRequestDelegate)
