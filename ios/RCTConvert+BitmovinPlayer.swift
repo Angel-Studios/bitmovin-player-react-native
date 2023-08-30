@@ -57,13 +57,13 @@ extension RCTConvert {
             return nil
         }
         let networkConfig = NetworkConfig()
-        // if let preprocessHttpRequestCallback = json["preprocessHttpRequestVars"] as? String {
-        //     let requestPromise = preprocessHttpRequestProxy(preprocessHttpRequestCallback)
-        //     networkConfig = NetworkConfig(
-        //         preprocessHttpRequestCallback: requestPromise,
-        //         preprocessHttpResponseCallback: nil
-        //     )
-        // }
+        if let preprocessHttpRequestCallback = json["preprocessHttpRequestVars"] as? String {
+            let requestPromise = preprocessHttpRequestProxy(preprocessHttpRequestCallback)
+            networkConfig = NetworkConfig(
+                preprocessHttpRequestCallback: requestPromise,
+                preprocessHttpResponseCallback: nil
+            )
+        }
         return networkConfig
     }
 
