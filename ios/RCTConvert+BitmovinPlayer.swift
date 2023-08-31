@@ -52,7 +52,7 @@ extension RCTConvert {
                 }
             }
             var delegate = RequestDelegate()
-            networkConfig.PreprocessHttpRequestDelegate = delegate
+            // networkConfig.preprocessHttpRequestDelegate = delegate
         }
         return networkConfig
     }
