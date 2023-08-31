@@ -51,7 +51,7 @@ extension RCTConvert {
                 completionHandler(httpRequest)
             }
             preprocessHttpRequestDelegate.preprocessHttpRequest = preprocessHttpRequest
-            networkConfig.preprocessHttpRequestDelegate = preprocessHttpRequestDelegate
+            // networkConfig.preprocessHttpRequestDelegate = preprocessHttpRequestDelegate
         }
         return networkConfig
     }
