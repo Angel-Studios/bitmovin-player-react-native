@@ -49,7 +49,7 @@ extension RCTConvert {
                 httpRequest.headers["Authorization"] = "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im5BcWRuMnNkZE01Y3J1In0.eyJhdWQiOiJodHRwczovL2FwaS5hbmdlbHN0dWRpb3MuY29tIiwiYXpwIjoiYW5nZWxfbW9iaWxlX3JlYWN0X25hdGl2ZV9hcHAiLCJleHAiOjE2OTU5MTc0MzcsImlhdCI6MTY5MzMyNTQzNywiaXNzIjoiaHR0cHM6Ly9hdXRoLmFuZ2VsLmNvbS8iLCJzY29wZSI6Imd1aWxkIiwic3ViIjoiYW5nZWxfbW9iaWxlX3JlYWN0X25hdGl2ZV9hcHAiLCJzdWJqZWN0X3R5cGUiOiJjbGllbnQiLCJ0eXAiOiJhY2Nlc3MifQ.NwrNsERRwZwA4tCDKbWIQt7M9L4SHOOx-NQzfV8t57aO_1_49v7oM0Vq4mowmJgUTZvnoiMUsiN7uy8cE2voYE6R5MwmiGVBZZzxjYyYjaqJsXym_8e6GW6vHH06bFpOIJJtSMIN2J---EjfxzOeG74m41Bg0fz3VvRqMeusTk0MftGTT2LwU5rG2mcVmncSBxUbj_9cNuiN8ZOl-usM2jT-ySzHryIcF-hxMM4ozn7FWYkcFpz7KCPoELQHBIQ3ZoSXAJ049K2m60uD6-QezjlXGQkZuwMqi1xsSpHYp7wSvO1zlAFrooeaRCoy98MHtkGd0LLrUoML7b_0dyuqSukiAfZn3W7i5jE3S77bExp2neR0zyJG468CyHMeDbd_cBHqiM16Ir9GtD7KafauPEZt2EfDr6bQiBbfMgS3pd_uaiBYILlFSSnN4kNEuhU5Cnt-CVNyot4fAIQxQ5J-_9J1tzWXihXN6PO6WlI_8l2vojIDDYCVbnqdEN_RJCSdsMfgxfy_9koqt5UQ8Pwg7i0HTU0sp8WFraVN5o2GsXtzZfLpi6PYXID8EK8NrJTp2JH7h2ClZUM_D2a5K40k3_CxpYBc_yt5i8cxoiuDZ91y9Tw_5IhF4Yd55_qGLj0udzztCcut7uHfFVmfMqy1wsQhdfpdXrhddQESUwaKJss"
                 completionHandler(httpRequest)
             }
-            let preprocessHttpRequestDelegate = PreProcessHttpRequestDelegate(preprocessHttpRequest: preprocessHttpRequest)
+            let preprocessHttpRequestDelegate = PreprocessHttpRequestDelegate(preprocessHttpRequest: preprocessHttpRequest)
             // preprocessHttpRequestDelegate["preprocessHttpRequest"] = preprocessHttpRequest
             // networkConfig.preprocessHttpRequestDelegate = preprocessHttpRequestDelegate
         }
