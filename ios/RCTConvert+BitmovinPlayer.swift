@@ -1,8 +1,10 @@
 import Foundation
 import BitmovinPlayer
 import BitmovinCollector
+import os
 
 extension RCTConvert {
+    let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "network")
     /**
      Utility method to instantiate a `PlayerConfig` from a JS object.
      - Parameter json: JS object
@@ -40,6 +42,7 @@ extension RCTConvert {
     * @returns: NetworkConfig object
     */
     static func networkConfig(_ json: Any?) -> NetworkConfig? {
+        logger.log("inside networkConfig -> RCTConvert+BitmovinPlayer")
         guard let json = json as? [String: Any?] else {
             return nil
         }
