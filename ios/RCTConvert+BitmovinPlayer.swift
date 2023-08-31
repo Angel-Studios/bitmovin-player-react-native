@@ -9,6 +9,7 @@ extension RCTConvert {
      - Returns: The produced `Playerconfig` object
      */
     static func playerConfig(_ json: Any?) -> PlayerConfig? {
+        print("inside playerConfig")
         let playerConfig = PlayerConfig()
         guard let json = json as? [String: Any?] else {
             return playerConfig
@@ -17,9 +18,11 @@ extension RCTConvert {
             playerConfig.key = licenseKey
         }
         if let playbackConfig = RCTConvert.playbackConfig(json["playbackConfig"]) {
+            print("inside playerBackConfig")
             playerConfig.playbackConfig = playbackConfig
         }
         if let styleConfig = RCTConvert.styleConfig(json["styleConfig"]) {
+            print("inside styleConfig")
             playerConfig.styleConfig = styleConfig
         }
         if let tweaksConfig = RCTConvert.tweaksConfig(json["tweaksConfig"]) {
@@ -29,6 +32,7 @@ extension RCTConvert {
             playerConfig.advertisingConfig = advertisingConfig
         }
         if let networkConfig = RCTConvert.networkConfig(json["netConfig"]) {
+            print("inside netConfig")
             playerConfig.networkConfig = networkConfig
         }
         return playerConfig
