@@ -30,7 +30,7 @@ jobs:
       CF_ZONEID: ${{ secrets.CF_ZONEID }}
 
     name: Generate documentation
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, amd-runners]
     steps:
       - uses: actions/checkout@v4
 

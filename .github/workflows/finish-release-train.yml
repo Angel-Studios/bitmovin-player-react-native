@@ -17,7 +17,7 @@ concurrency:
 jobs:
   prepare:
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/v')
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, amd-runners]
     outputs:
       version_number: ${{ steps.version_number.outputs.version_number }}
     steps:
@@ -50,7 +50,7 @@ jobs:
 
   create_pr:
     needs: [prepare]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, amd-runners]
     steps:
       - uses: actions/checkout@v4
 
@@ -66,7 +66,7 @@ jobs:
 
   publish_release:
     needs: [prepare, create_pr]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, amd-runners]
     permissions:
       contents: write
     steps:

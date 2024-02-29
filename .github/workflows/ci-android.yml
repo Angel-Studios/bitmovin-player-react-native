@@ -32,7 +32,7 @@ env:
 jobs:
   code-style-android:
     name: Code style Android
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, amd-runners]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
 
   test-build-android:
     name: Build Android
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, amd-runners]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
