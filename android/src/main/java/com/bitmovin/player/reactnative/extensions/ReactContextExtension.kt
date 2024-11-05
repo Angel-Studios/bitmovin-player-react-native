@@ -13,10 +13,10 @@ inline fun <reified T : ReactContextBaseJavaModule> ReactContext.getModule(): T?
     return getNativeModule(T::class.java)
 }
 
-val ReactApplicationContext.playerModule get() = getModule<PlayerModule>()
-val ReactApplicationContext.sourceModule get() = getModule<SourceModule>()
-val ReactApplicationContext.offlineModule get() = getModule<OfflineModule>()
-val ReactApplicationContext.uiManagerModule get() = getModule<UIManagerModule>()
-val ReactApplicationContext.drmModule get() = getModule<DrmModule>()
-val ReactApplicationContext.customMessageHandlerModule get() = getModule<CustomMessageHandlerModule>()
-val ReactApplicationContext.networkModule get() = getModule<NetworkModule>()
+val ReactContext.playerModule get() = getModule<PlayerModule>()
+val ReactContext.sourceModule get() = getModule<SourceModule>()
+val ReactContext.offlineModule get() = getModule<OfflineModule>()
+val ReactContext.uiManagerModule get() = getModule<UIManagerModule>()
+val ReactContext.drmModule get() = getModule<DrmModule>()
+val ReactContext.customMessageHandlerModule get() = getModule<CustomMessageHandlerModule>()
+val ReactContext.networkModule get() = getModule<NetworkModule>()

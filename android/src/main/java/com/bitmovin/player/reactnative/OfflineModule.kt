@@ -38,6 +38,18 @@ class OfflineModule(context: ReactApplicationContext) : BitmovinBaseModule(conte
     ): OfflineContentManagerBridge = offlineContentManagerBridges[nativeId]
         ?: throw IllegalArgumentException("No offline content manager bridge for id $nativeId")
 
+    override fun invalidate() {
+        super.invalidate()
+        context.runOnUiQueueThread {
+            offlineContentManagerBridges.keys.forEach { nativeId ->
+                getOfflineContentManagerBridgeOrNull(nativeId)?.let { offlineContentManagerBridge ->
+                    offlineContentManagerBridge.release()
+                    offlineContentManagerBridges.remove(nativeId)
+                }
+            }
+        }
+    }
+
     /**
      * Callback when a new NativeEventEmitter is created from the Typescript layer.
      */

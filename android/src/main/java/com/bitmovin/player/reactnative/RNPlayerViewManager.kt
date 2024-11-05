@@ -27,7 +27,7 @@ import java.security.InvalidParameterException
 private const val MODULE_NAME = "NativePlayerView"
 
 @ReactModule(name = MODULE_NAME)
-class RNPlayerViewManager(private val context: ReactApplicationContext) : SimpleViewManager<RNPlayerView>() {
+class RNPlayerViewManager(context: ReactApplicationContext) : SimpleViewManager<RNPlayerView>() {
     /**
      * Native component functions.
      */
@@ -47,12 +47,16 @@ class RNPlayerViewManager(private val context: ReactApplicationContext) : Simple
 
     private var customMessageHandlerBridgeId: NativeId? = null
     private val handler = Handler(Looper.getMainLooper())
+    private var context: ReactContext = context
 
     /**
      * The component's native view factory. RN may call this method multiple times
      * for each component instance.
      */
-    override fun createViewInstance(reactContext: ThemedReactContext) = RNPlayerView(reactContext)
+    override fun createViewInstance(reactContext: ThemedReactContext): RNPlayerView {
+        this.context = reactContext
+        return RNPlayerView(reactContext)
+    }
 
     /**
      * Called when the component's view gets detached from the view hierarchy. Useful to perform

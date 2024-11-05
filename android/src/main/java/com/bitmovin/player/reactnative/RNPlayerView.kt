@@ -99,7 +99,7 @@ private val EVENT_CLASS_TO_REACT_NATIVE_NAME_MAPPING_UI = mapOf<KClass<out Event
  */
 @SuppressLint("ViewConstructor")
 class RNPlayerView(
-    private val context: ThemedReactContext,
+    private val context: ReactContext,
 ) : FrameLayout(context) {
     private val activityLifecycle = (context.currentActivity as? ReactActivity)?.lifecycle
         ?: error("Trying to create an instance of ${this::class.simpleName} while not attached to a ReactActivity")
@@ -293,8 +293,8 @@ class RNPlayerView(
             is SourceEvent -> event.toJson()
             else -> throw IllegalArgumentException()
         }
-        val reactContext = context as ReactContext
-        reactContext
+
+        context
             .getJSModule(RCTEventEmitter::class.java)
             .receiveEvent(id, name, payload)
     }

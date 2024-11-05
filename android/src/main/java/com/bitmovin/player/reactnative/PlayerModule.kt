@@ -35,6 +35,18 @@ class PlayerModule(context: ReactApplicationContext) : BitmovinBaseModule(contex
      */
     fun getPlayerOrNull(nativeId: NativeId): Player? = players[nativeId]
 
+    override fun invalidate() {
+        super.invalidate()
+        context.runOnUiQueueThread {
+            players.keys.forEach { nativeId ->
+                getPlayerOrNull(nativeId)?.let { player ->
+                    player.destroy()
+                    players.remove(nativeId)
+                }
+            }
+        }
+    }
+
     /**
      * Creates a new `Player` instance inside the internal players using the provided `config` object.
      * @param config `PlayerConfig` object received from JS.
