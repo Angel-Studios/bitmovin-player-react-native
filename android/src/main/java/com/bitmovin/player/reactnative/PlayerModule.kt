@@ -20,13 +20,10 @@ private const val MODULE_NAME = "PlayerModule"
 
 @ReactModule(name = MODULE_NAME)
 class PlayerModule(context: ReactApplicationContext) : BitmovinBaseModule(context) {
-
-    companion object {
-        /**
-         * In-memory mapping from [NativeId]s to [Player] instances.
-         */
-        private val players: Registry<Player> = mutableMapOf()
-    }
+    /**
+     * In-memory mapping from [NativeId]s to [Player] instances.
+     */
+    private val players: Registry<Player> = mutableMapOf()
 
     /**
      * JS exported module name.
@@ -584,21 +581,6 @@ class PlayerModule(context: ReactApplicationContext) : BitmovinBaseModule(contex
     fun setPlaybackSpeed(nativeId: NativeId, playbackSpeed: Float, promise: Promise) {
         promise.unit.resolveOnUiThreadWithPlayer(nativeId) {
             this.playbackSpeed = playbackSpeed
-        }
-    }
-
-    /**
-     * Call `.destroy()` on all registered players.
-     * @param nativeId Target player Id.
-     */
-    @ReactMethod
-    fun disposeAll(promise: Promise) {
-        promise.unit.resolveOnUiThread {
-            players.entries.forEach {
-                it.value.destroy()
-                players.remove(it.key)
-            }
-            promise.resolve(null)
         }
     }
 

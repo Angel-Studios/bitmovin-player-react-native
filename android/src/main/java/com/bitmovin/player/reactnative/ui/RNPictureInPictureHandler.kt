@@ -56,21 +56,4 @@ class RNPictureInPictureHandler(
         super.exitPictureInPicture()
         _isPictureInPicture = false
     }
-
-    /**
-     * Disposes the PiP parameters when the PlayerView is disposed.
-     */
-    open fun dispose() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !isPictureInPictureAvailable) {
-            return
-        }
-
-        currentActivity?.let {
-            it.setPictureInPictureParams(
-                PictureInPictureParams.Builder()
-                    .setAutoEnterEnabled(false)
-                    .build(),
-            )
-        }
-    }
 }

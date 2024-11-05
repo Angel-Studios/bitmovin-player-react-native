@@ -10,11 +10,5 @@ RCT_EXTERN_METHOD(
     resolver:(RCTPromiseResolveBlock)resolve
     rejecter:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(sendMessage:(NSString *)message messageNamespace:(nullable NSString *)messageNamespace)
-RCT_EXTERN_METHOD(
-    showDialog:(RCTPromiseResolveBlock)resolve
-    rejecter:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(
-    disconnect:(RCTPromiseResolveBlock)resolve
-    rejecter:(RCTPromiseRejectBlock)reject)
 
 @end

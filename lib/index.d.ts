@@ -2656,7 +2656,6 @@ declare class OfflineContentManager extends NativeInstance<OfflineContentConfig>
      * Errors are transmitted to the `OfflineContentManagerListener.onError`.
      */
     renewOfflineLicense: () => Promise<void>;
-    static disposeAll: () => Promise<void>;
 }
 
 /**
@@ -3568,7 +3567,6 @@ declare class Player extends NativeInstance<PlayerConfig> {
      * @platform iOS, tvOS
      */
     canPlayAtPlaybackSpeed: (playbackSpeed: number) => Promise<boolean | undefined>;
-    static disposeAll: () => Promise<null>;
 }
 
 /**
@@ -3889,18 +3887,6 @@ declare const BitmovinCastManager: {
      * @returns A promise that resolves when the message was sent successfully
      */
     sendMessage: (message: String, messageNamespace?: String | null) => any;
-    /**
-     * Opens the cast dialog, for selecting and starting a cast session.
-     *
-     * @returns A promise that resolves when the dialog has requested to be opened
-     */
-    showDialog: () => Promise<void>;
-    /**
-     * Disconnects from the current cast session.
-     *
-     * @returns A promise that resolves when the call to disconnect has finished
-     */
-    disconnect: () => Promise<void>;
 };
 
 /**
