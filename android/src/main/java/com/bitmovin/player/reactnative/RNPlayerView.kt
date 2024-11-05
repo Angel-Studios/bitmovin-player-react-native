@@ -19,7 +19,6 @@ import com.bitmovin.player.reactnative.converter.toJson
 import com.bitmovin.player.reactnative.ui.SubtitleViewConfig
 import com.facebook.react.ReactActivity
 import com.facebook.react.bridge.*
-import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import kotlin.reflect.KClass
 
