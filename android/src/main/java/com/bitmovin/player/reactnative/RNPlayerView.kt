@@ -262,7 +262,7 @@ class RNPlayerView(
 
     private fun isPictureInPictureAvailable(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                context.packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+            context.packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -299,7 +299,7 @@ class RNPlayerView(
             if (!isPictureInPictureAvailable() || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
 
             val isAutoEnterConfigDisabled = config?.pictureInPictureConfig?.isEnabled != true ||
-                    config?.pictureInPictureConfig?.shouldEnterOnBackground != true
+                config?.pictureInPictureConfig?.shouldEnterOnBackground != true
 
             if (isAutoEnterConfigDisabled) {
                 if (isPictureInPictureAutoEnterEnabled) {
@@ -319,10 +319,12 @@ class RNPlayerView(
 
     private fun clearPipAutoEnter() {
         if (
-            !isPictureInPictureAvailable()
-            || Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-            || !isPictureInPictureAutoEnterEnabled
-        ) return
+            !isPictureInPictureAvailable() ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+            !isPictureInPictureAutoEnterEnabled
+        ) {
+            return
+        }
 
         context.currentActivity?.setPictureInPictureParams(
             PictureInPictureParams.Builder().setAutoEnterEnabled(false).build(),
