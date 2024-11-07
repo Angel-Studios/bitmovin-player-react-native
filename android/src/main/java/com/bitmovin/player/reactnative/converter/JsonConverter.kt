@@ -752,6 +752,7 @@ fun Thumbnail.toJson(): WritableMap = Arguments.createMap().apply {
 
 fun ReadableMap.toPictureInPictureConfig(): PictureInPictureConfig = PictureInPictureConfig(
     isEnabled = getBooleanOrNull("isEnabled") ?: false,
+    shouldEnterOnBackground = getBooleanOrNull("shouldEnterOnBackground") ?: false,
 )
 
 fun ReadableMap.toSubtitleViewConfig(): SubtitleViewConfig = SubtitleViewConfig(

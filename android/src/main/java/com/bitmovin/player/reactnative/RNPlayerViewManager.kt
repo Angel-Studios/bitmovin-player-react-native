@@ -211,13 +211,7 @@ class RNPlayerViewManager(context: ReactApplicationContext) : SimpleViewManager<
 
     private fun setPictureInPicture(view: RNPlayerView, isPictureInPictureRequested: Boolean) {
         handler.postAndLogException {
-            val playerView = view.playerView ?: throw IllegalStateException("The player view is not yet created")
-            if (playerView.isPictureInPicture == isPictureInPictureRequested) return@postAndLogException
-            if (isPictureInPictureRequested) {
-                playerView.enterPictureInPicture()
-            } else {
-                playerView.exitPictureInPicture()
-            }
+            view.pictureInPictureRequested(isPictureInPictureRequested)
         }
     }
 

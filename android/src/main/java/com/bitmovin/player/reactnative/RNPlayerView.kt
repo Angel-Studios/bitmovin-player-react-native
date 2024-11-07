@@ -1,11 +1,18 @@
 package com.bitmovin.player.reactnative
 
 import android.annotation.SuppressLint
+import android.app.PictureInPictureParams
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Rect
 import android.os.Build
+import android.util.Rational
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
@@ -162,6 +169,22 @@ class RNPlayerView(
     val playerView: PlayerView? get() = _playerView
 
     private var subtitleView: SubtitleView? = null
+    private val playerViewSourceRect = Rect()
+
+    private val playerViewLayoutListener = OnLayoutChangeListener {
+            _: View?,
+            left: Int, top: Int, right: Int, bottom: Int,
+            oldLeft: Int, oldRight: Int, oldTop: Int, oldBottom: Int,
+        ->
+        if (left != oldLeft ||
+            right != oldRight ||
+            top != oldTop ||
+            bottom != oldBottom
+        ) {
+            playerView?.getGlobalVisibleRect(playerViewSourceRect)
+            applyPipConfig()
+        }
+    }
 
     /**
      * Handy property accessor for `playerView`'s player instance.
@@ -180,12 +203,14 @@ class RNPlayerView(
         set(value) {
             field = value
             applySubtitleConfig()
+            applyPipConfig()
         }
 
     /**
      * Cleans up the resources and listeners produced by this view.
      */
     fun dispose() {
+        clearPipAutoEnter()
         activityLifecycle.removeObserver(activityLifecycleObserver)
 
         val playerView = _playerView ?: return
@@ -204,12 +229,14 @@ class RNPlayerView(
     fun setPlayerView(playerView: PlayerView) {
         this.playerView?.let { currentPlayerView ->
             (currentPlayerView.parent as? ViewGroup)?.removeView(currentPlayerView)
+            currentPlayerView.removeOnLayoutChangeListener(playerViewLayoutListener)
         }
         this._playerView = playerView
         if (playerView.parent != this) {
             (playerView.parent as ViewGroup?)?.removeView(playerView)
             addView(playerView, 0)
         }
+        playerView.addOnLayoutChangeListener(playerViewLayoutListener)
     }
 
     /**
@@ -230,16 +257,87 @@ class RNPlayerView(
         }
     }
 
+    private var isCurrentActivityInPictureInPictureMode: Boolean = isInPictureInPictureMode()
+    private var isPictureInPictureAutoEnterEnabled: Boolean = false
+
+    private fun isPictureInPictureAvailable(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                context.packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun pictureInPictureParams(): PictureInPictureParams.Builder {
+        val aspectRatio =
+            player?.playbackVideoData
+                ?.let { Rational(it.width, it.height) }
+                ?: Rational(16, 9)
+
+        val params = PictureInPictureParams.Builder()
+            .setAspectRatio(aspectRatio)
+
+        if (!playerViewSourceRect.isEmpty) {
+            params.setSourceRectHint(playerViewSourceRect)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            params.setExpandedAspectRatio(aspectRatio)
+        }
+
+        return params
+    }
+
+    fun pictureInPictureRequested(isPictureInPictureRequested: Boolean) {
+        val bitmovinView = playerView ?: return
+        if (bitmovinView.isPictureInPicture == isPictureInPictureRequested) return
+        if (!isPictureInPictureAvailable() || activityLifecycle.currentState != Lifecycle.State.RESUMED) return
+
+        context.currentActivity?.enterPictureInPictureMode(pictureInPictureParams().build())
+    }
+
+    private fun applyPipConfig() {
+        context.currentActivity?.let { activity ->
+            if (!isPictureInPictureAvailable() || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+
+            val isAutoEnterConfigDisabled = config?.pictureInPictureConfig?.isEnabled != true ||
+                    config?.pictureInPictureConfig?.shouldEnterOnBackground != true
+
+            if (isAutoEnterConfigDisabled) {
+                if (isPictureInPictureAutoEnterEnabled) {
+                    clearPipAutoEnter()
+                }
+                return
+            }
+
+            val params = pictureInPictureParams()
+                .setAutoEnterEnabled(true)
+                .setSeamlessResizeEnabled(true)
+
+            activity.setPictureInPictureParams(params.build())
+            isPictureInPictureAutoEnterEnabled = true
+        }
+    }
+
+    private fun clearPipAutoEnter() {
+        if (
+            !isPictureInPictureAvailable()
+            || Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+            || !isPictureInPictureAutoEnterEnabled
+        ) return
+
+        context.currentActivity?.setPictureInPictureParams(
+            PictureInPictureParams.Builder().setAutoEnterEnabled(false).build(),
+        )
+        isPictureInPictureAutoEnterEnabled = false
+    }
+
     private fun isInPictureInPictureMode(): Boolean {
         val activity = context.currentActivity ?: return false
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        return if (isPictureInPictureAvailable()) {
             activity.isInPictureInPictureMode
         } else {
             false
         }
     }
-
-    private var isCurrentActivityInPictureInPictureMode: Boolean = isInPictureInPictureMode()
 
     /**
      * Called whenever this view's activity configuration changes.
@@ -332,4 +430,4 @@ enum class UserInterfaceType {
 /**
  * Configuration type for picture in picture behaviors.
  */
-data class PictureInPictureConfig(val isEnabled: Boolean)
+data class PictureInPictureConfig(val isEnabled: Boolean, val shouldEnterOnBackground: Boolean)
