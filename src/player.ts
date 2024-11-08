@@ -80,20 +80,22 @@ export class Player extends NativeInstance<PlayerConfig> {
   /**
    * Destroys the native `Player` and releases all of its allocated resources.
    */
-  destroy = () => {
-    if (!this.isDestroyed) {
-      PlayerModule.destroy(this.nativeId);
-      this.source?.destroy();
-      this.network?.destroy();
-      this.isDestroyed = true;
+  destroy = async (): Promise<void> => {
+    if (this.isDestroyed) {
+      return Promise.resolve();
     }
+
+    await PlayerModule.destroy(this.nativeId);
+    this.source?.destroy();
+    this.network?.destroy();
+    this.isDestroyed = true;
   };
 
   /**
    * Loads a new {@link Source} from `sourceConfig` into the player.
    */
-  load = (sourceConfig: SourceConfig) => {
-    this.loadSource(new Source(sourceConfig));
+  load = (sourceConfig: SourceConfig): Promise<void> | void => {
+    return this.loadSource(new Source(sourceConfig));
   };
 
   /**
@@ -102,8 +104,8 @@ export class Player extends NativeInstance<PlayerConfig> {
   loadOfflineContent = (
     offlineContentManager: OfflineContentManager,
     options?: OfflineSourceOptions
-  ) => {
-    PlayerModule.loadOfflineContent(
+  ): Promise<void> | void => {
+    return PlayerModule.loadOfflineContent(
       this.nativeId,
       offlineContentManager.nativeId,
       options
@@ -113,31 +115,31 @@ export class Player extends NativeInstance<PlayerConfig> {
   /**
    * Loads the given {@link Source} into the player.
    */
-  loadSource = (source: Source) => {
+  loadSource = (source: Source): Promise<void> | void => {
     source.initialize();
     this.source = source;
-    PlayerModule.loadSource(this.nativeId, source.nativeId);
+    return PlayerModule.loadSource(this.nativeId, source.nativeId);
   };
 
   /**
    * Unloads all {@link Source}s from the player.
    */
-  unload = () => {
-    PlayerModule.unload(this.nativeId);
+  unload = (): Promise<void> | void => {
+    return PlayerModule.unload(this.nativeId);
   };
 
   /**
    * Starts or resumes playback after being paused. Has no effect if the player is already playing.
    */
-  play = () => {
-    PlayerModule.play(this.nativeId);
+  play = (): Promise<void> | void => {
+    return PlayerModule.play(this.nativeId);
   };
 
   /**
    * Pauses the video if it is playing. Has no effect if the player is already paused.
    */
-  pause = () => {
-    PlayerModule.pause(this.nativeId);
+  pause = (): Promise<void> | void => {
+    return PlayerModule.pause(this.nativeId);
   };
 
   /**
@@ -147,8 +149,8 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @param time - The time to seek to in seconds.
    */
-  seek = (time: number) => {
-    PlayerModule.seek(this.nativeId, time);
+  seek = (time: number): Promise<void> | void => {
+    return PlayerModule.seek(this.nativeId, time);
   };
 
   /**
@@ -162,22 +164,22 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @param offset - Target offset from the live edge in seconds.
    */
-  timeShift = (offset: number) => {
-    PlayerModule.timeShift(this.nativeId, offset);
+  timeShift = (offset: number): Promise<void> | void => {
+    return PlayerModule.timeShift(this.nativeId, offset);
   };
 
   /**
    * Mutes the player if an audio track is available. Has no effect if the player is already muted.
    */
-  mute = () => {
-    PlayerModule.mute(this.nativeId);
+  mute = (): Promise<void> | void => {
+    return PlayerModule.mute(this.nativeId);
   };
 
   /**
    * Unmutes the player if it is muted. Has no effect if the player is already unmuted.
    */
-  unmute = () => {
-    PlayerModule.unmute(this.nativeId);
+  unmute = (): Promise<void> | void => {
+    return PlayerModule.unmute(this.nativeId);
   };
 
   /**
@@ -185,8 +187,8 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @param volume - The volume level to set.
    */
-  setVolume = (volume: number) => {
-    PlayerModule.setVolume(this.nativeId, volume);
+  setVolume = (volume: number): Promise<void> | void => {
+    return PlayerModule.setVolume(this.nativeId, volume);
   };
 
   /**
@@ -329,8 +331,8 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @platform iOS, Android
    */
-  scheduleAd = (adItem: AdItem) => {
-    PlayerModule.scheduleAd(this.nativeId, adItem);
+  scheduleAd = (adItem: AdItem): Promise<void> | void => {
+    return PlayerModule.scheduleAd(this.nativeId, adItem);
   };
 
   /**
@@ -339,8 +341,8 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @platform iOS, Android
    */
-  skipAd = () => {
-    PlayerModule.skipAd(this.nativeId);
+  skipAd = (): Promise<void> | void => {
+    return PlayerModule.skipAd(this.nativeId);
   };
 
   /**
@@ -373,8 +375,8 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * Can be set to `null` for no limitation.
    */
-  setMaxSelectableBitrate = (bitrate: number | null) => {
-    PlayerModule.setMaxSelectableBitrate(this.nativeId, bitrate || -1);
+  setMaxSelectableBitrate = (bitrate: number | null): Promise<void> | void => {
+    return PlayerModule.setMaxSelectableBitrate(this.nativeId, bitrate || -1);
   };
 
   /**
@@ -416,8 +418,8 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @platform iOS, Android
    */
-  castVideo = () => {
-    PlayerModule.castVideo(this.nativeId);
+  castVideo = (): Promise<void> | void => {
+    return PlayerModule.castVideo(this.nativeId);
   };
 
   /**
@@ -425,8 +427,8 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @platform iOS, Android
    */
-  castStop = () => {
-    PlayerModule.castStop(this.nativeId);
+  castStop = (): Promise<void> | void => {
+    return PlayerModule.castStop(this.nativeId);
   };
 
   /**
@@ -452,14 +454,14 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @param qualityId value obtained from {@link VideoQuality}'s `id` property, which can be obtained via `Player.getAvailableVideoQualities()` to select a specific quality. To use automatic quality selection, 'auto' can be passed here.
    */
-  setVideoQuality = (qualityId: String) => {
+  setVideoQuality = (qualityId: String): Promise<void> | void => {
     if (Platform.OS !== 'android') {
       console.warn(
         `[Player ${this.nativeId}] Method setVideoQuality is not available for iOS and tvOS devices. Only Android devices.`
       );
-      return;
+      return Promise.resolve();
     }
-    PlayerModule.setVideoQuality(this.nativeId, qualityId);
+    return PlayerModule.setVideoQuality(this.nativeId, qualityId);
   };
 
   /**
@@ -478,8 +480,8 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @param playbackSpeed - The playback speed to set.
    */
-  setPlaybackSpeed = (playbackSpeed: number) => {
-    PlayerModule.setPlaybackSpeed(this.nativeId, playbackSpeed);
+  setPlaybackSpeed = (playbackSpeed: number): Promise<void> | void => {
+    return PlayerModule.setPlaybackSpeed(this.nativeId, playbackSpeed);
   };
 
   /**

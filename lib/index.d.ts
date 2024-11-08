@@ -3313,31 +3313,31 @@ declare class Player extends NativeInstance<PlayerConfig> {
     /**
      * Destroys the native `Player` and releases all of its allocated resources.
      */
-    destroy: () => void;
+    destroy: () => Promise<void>;
     /**
      * Loads a new {@link Source} from `sourceConfig` into the player.
      */
-    load: (sourceConfig: SourceConfig) => void;
+    load: (sourceConfig: SourceConfig) => Promise<void> | void;
     /**
      * Loads the downloaded content from {@link OfflineContentManager} into the player.
      */
-    loadOfflineContent: (offlineContentManager: OfflineContentManager, options?: OfflineSourceOptions) => void;
+    loadOfflineContent: (offlineContentManager: OfflineContentManager, options?: OfflineSourceOptions) => Promise<void> | void;
     /**
      * Loads the given {@link Source} into the player.
      */
-    loadSource: (source: Source) => void;
+    loadSource: (source: Source) => Promise<void> | void;
     /**
      * Unloads all {@link Source}s from the player.
      */
-    unload: () => void;
+    unload: () => Promise<void> | void;
     /**
      * Starts or resumes playback after being paused. Has no effect if the player is already playing.
      */
-    play: () => void;
+    play: () => Promise<void> | void;
     /**
      * Pauses the video if it is playing. Has no effect if the player is already paused.
      */
-    pause: () => void;
+    pause: () => Promise<void> | void;
     /**
      * Seeks to the given playback time specified by the parameter `time` in seconds. Must not be
      * greater than the total duration of the video. Has no effect when watching a live stream since
@@ -3345,7 +3345,7 @@ declare class Player extends NativeInstance<PlayerConfig> {
      *
      * @param time - The time to seek to in seconds.
      */
-    seek: (time: number) => void;
+    seek: (time: number) => Promise<void> | void;
     /**
      * Shifts the time to the given `offset` in seconds from the live edge. The resulting offset has to be within the
      * timeShift window as specified by `maxTimeShift` (which is a negative value) and 0. When the provided `offset` is
@@ -3357,21 +3357,21 @@ declare class Player extends NativeInstance<PlayerConfig> {
      *
      * @param offset - Target offset from the live edge in seconds.
      */
-    timeShift: (offset: number) => void;
+    timeShift: (offset: number) => Promise<void> | void;
     /**
      * Mutes the player if an audio track is available. Has no effect if the player is already muted.
      */
-    mute: () => void;
+    mute: () => Promise<void> | void;
     /**
      * Unmutes the player if it is muted. Has no effect if the player is already unmuted.
      */
-    unmute: () => void;
+    unmute: () => Promise<void> | void;
     /**
      * Sets the player's volume between 0 (silent) and 100 (max volume).
      *
      * @param volume - The volume level to set.
      */
-    setVolume: (volume: number) => void;
+    setVolume: (volume: number) => Promise<void> | void;
     /**
      * @returns The player's current volume level.
      */
@@ -3453,14 +3453,14 @@ declare class Player extends NativeInstance<PlayerConfig> {
      *
      * @platform iOS, Android
      */
-    scheduleAd: (adItem: AdItem) => void;
+    scheduleAd: (adItem: AdItem) => Promise<void> | void;
     /**
      * Skips the current ad.
      * Has no effect if the current ad is not skippable or if no ad is being played back.
      *
      * @platform iOS, Android
      */
-    skipAd: () => void;
+    skipAd: () => Promise<void> | void;
     /**
      * @returns `true` while an ad is being played back or when main content playback has been paused for ad playback.
      * @platform iOS, Android
@@ -3482,7 +3482,7 @@ declare class Player extends NativeInstance<PlayerConfig> {
      *
      * Can be set to `null` for no limitation.
      */
-    setMaxSelectableBitrate: (bitrate: number | null) => void;
+    setMaxSelectableBitrate: (bitrate: number | null) => Promise<void> | void;
     /**
      * @returns a {@link Thumbnail} for the specified playback time for the currently active source if available.
      * Supported thumbnail formats are:
@@ -3513,13 +3513,13 @@ declare class Player extends NativeInstance<PlayerConfig> {
      *
      * @platform iOS, Android
      */
-    castVideo: () => void;
+    castVideo: () => Promise<void> | void;
     /**
      * Stops casting the current video. Has no effect if {@link Player.isCasting} is `false`.
      *
      * @platform iOS, Android
      */
-    castStop: () => void;
+    castStop: () => Promise<void> | void;
     /**
      * Returns the currently selected video quality.
      * @returns The currently selected video quality.
@@ -3537,7 +3537,7 @@ declare class Player extends NativeInstance<PlayerConfig> {
      *
      * @param qualityId value obtained from {@link VideoQuality}'s `id` property, which can be obtained via `Player.getAvailableVideoQualities()` to select a specific quality. To use automatic quality selection, 'auto' can be passed here.
      */
-    setVideoQuality: (qualityId: String) => void;
+    setVideoQuality: (qualityId: String) => Promise<void> | void;
     /**
      * Sets the playback speed of the player. Fast forward, slow motion and reverse playback are supported.
      * @note
@@ -3554,7 +3554,7 @@ declare class Player extends NativeInstance<PlayerConfig> {
      *
      * @param playbackSpeed - The playback speed to set.
      */
-    setPlaybackSpeed: (playbackSpeed: number) => void;
+    setPlaybackSpeed: (playbackSpeed: number) => Promise<void> | void;
     /**
      * @see {@link setPlaybackSpeed} for details on which values playback speed can assume.
      * @returns The player's current playback speed.
