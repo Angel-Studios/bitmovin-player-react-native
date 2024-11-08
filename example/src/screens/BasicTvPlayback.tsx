@@ -1,32 +1,39 @@
 import React, { useCallback } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, Platform, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   Event,
   usePlayer,
   PlayerView,
   SourceType,
-  BitmovinCastManager,
-  Source,
+  PlayerViewConfig,
+  TvUi,
 } from 'bitmovin-player-react-native';
+import { useTVGestures } from '../hooks';
 
 function prettyPrint(header: string, obj: any) {
   console.log(header, JSON.stringify(obj, null, 2));
 }
 
-export default function Casting() {
-  BitmovinCastManager.initialize();
+export default function BasicTvPlayback() {
+  useTVGestures();
 
-  if (Platform.OS === 'android') {
-    // Must be called in every activity on Android
-    BitmovinCastManager.updateContext();
-  }
+  const player = usePlayer({
+    remoteControlConfig: {
+      isCastEnabled: false,
+    },
+  });
 
-  const player = usePlayer();
+  const config: PlayerViewConfig = {
+    uiConfig: {
+      // This is only applied for Android TVs, as on TvOS only the system UI is supported.
+      variant: new TvUi(),
+    },
+  };
 
   useFocusEffect(
     useCallback(() => {
-      const source = new Source({
+      player.load({
         url:
           Platform.OS === 'ios'
             ? 'https://bitmovin-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8'
@@ -39,16 +46,6 @@ export default function Casting() {
           'https://cdn.bitmovin.com/content/assets/art-of-motion-dash-hls-progressive/thumbnails/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.vtt',
         metadata: { platform: Platform.OS },
       });
-
-      // Configure playing DASH source on Chromecast, even when casting from iOS.
-      source.remoteControl = {
-        castSourceConfig: {
-          url: 'https://bitmovin-a.akamaihd.net/content/MI201109210084_1/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd',
-          type: SourceType.DASH,
-          title: 'Art of Motion',
-        },
-      };
-      player.loadSource(source);
       return () => {
         player.destroy();
       };
@@ -68,21 +65,17 @@ export default function Casting() {
       <PlayerView
         player={player}
         style={styles.player}
+        config={config}
         onPlay={onEvent}
         onPlaying={onEvent}
         onPaused={onEvent}
         onReady={onReady}
+        onSourceLoaded={onEvent}
         onSeek={onEvent}
         onSeeked={onEvent}
-        onCastAvailable={onEvent}
-        onCastPaused={onEvent}
-        onCastPlaybackFinished={onEvent}
-        onCastPlaying={onEvent}
-        onCastStarted={onEvent}
-        onCastStart={onEvent}
-        onCastStopped={onEvent}
-        onCastTimeUpdated={onEvent}
-        onCastWaitingForDevice={onEvent}
+        onStallStarted={onEvent}
+        onStallEnded={onEvent}
+        onVideoPlaybackQualityChanged={onEvent}
       />
     </View>
   );

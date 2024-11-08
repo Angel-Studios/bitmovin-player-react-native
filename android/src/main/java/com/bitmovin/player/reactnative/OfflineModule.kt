@@ -16,12 +16,10 @@ private const val OFFLINE_MODULE = "BitmovinOfflineModule"
 @ReactModule(name = OFFLINE_MODULE)
 class OfflineModule(context: ReactApplicationContext) : BitmovinBaseModule(context) {
 
-    companion object {
-        /**
-         * In-memory mapping from `nativeId`s to `OfflineManager` instances.
-         */
-        private val offlineContentManagerBridges: Registry<OfflineContentManagerBridge> = mutableMapOf()
-    }
+    /**
+     * In-memory mapping from `nativeId`s to `OfflineManager` instances.
+     */
+    private val offlineContentManagerBridges: Registry<OfflineContentManagerBridge> = mutableMapOf()
 
     /**
      * JS exported module name.
@@ -39,6 +37,18 @@ class OfflineModule(context: ReactApplicationContext) : BitmovinBaseModule(conte
         nativeId: NativeId,
     ): OfflineContentManagerBridge = offlineContentManagerBridges[nativeId]
         ?: throw IllegalArgumentException("No offline content manager bridge for id $nativeId")
+
+    override fun invalidate() {
+        super.invalidate()
+        context.runOnUiQueueThread {
+            offlineContentManagerBridges.keys.forEach { nativeId ->
+                getOfflineContentManagerBridgeOrNull(nativeId)?.let { offlineContentManagerBridge ->
+                    offlineContentManagerBridge.release()
+                    offlineContentManagerBridges.remove(nativeId)
+                }
+            }
+        }
+    }
 
     /**
      * Callback when a new NativeEventEmitter is created from the Typescript layer.
@@ -118,7 +128,6 @@ class OfflineModule(context: ReactApplicationContext) : BitmovinBaseModule(conte
                 OfflineOptionEntryState.Downloading, OfflineOptionEntryState.Failed -> throw IllegalStateException(
                     "Download already in progress",
                 )
-
                 OfflineOptionEntryState.Suspended -> throw IllegalStateException("Download is suspended")
                 else -> {}
             }
@@ -235,31 +244,9 @@ class OfflineModule(context: ReactApplicationContext) : BitmovinBaseModule(conte
     @ReactMethod
     fun release(nativeId: NativeId, promise: Promise) {
         promise.unit.resolveWithBridge(nativeId) {
-            releaseOfflineContentManagerBridge(nativeId, this)
+            release()
+            offlineContentManagerBridges.remove(nativeId)
         }
-    }
-
-    /**
-     * Call `.destroy()` on all registered offline managers.
-     * @param nativeId Target player Id.
-     */
-    @ReactMethod
-    fun disposeAll(promise: Promise) {
-        promise.unit.resolveOnUiThread {
-            offlineContentManagerBridges.keys.forEach { nativeId ->
-                getOfflineContentManagerBridgeOrNull(nativeId)?.let { offlineContentManagerBridge ->
-                    releaseOfflineContentManagerBridge(nativeId, offlineContentManagerBridge)
-                }
-            }
-        }
-    }
-
-    private fun releaseOfflineContentManagerBridge(
-        nativeId: NativeId,
-        offlineContentManagerBridge: OfflineContentManagerBridge,
-    ) {
-        offlineContentManagerBridge.release()
-        offlineContentManagerBridges.remove(nativeId)
     }
 
     private inline fun <T> TPromise<T>.resolveWithBridge(

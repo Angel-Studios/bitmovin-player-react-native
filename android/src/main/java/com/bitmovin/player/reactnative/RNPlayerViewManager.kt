@@ -27,7 +27,7 @@ import java.security.InvalidParameterException
 private const val MODULE_NAME = "NativePlayerView"
 
 @ReactModule(name = MODULE_NAME)
-class RNPlayerViewManager(private val context: ReactApplicationContext) : SimpleViewManager<RNPlayerView>() {
+class RNPlayerViewManager(context: ReactApplicationContext) : SimpleViewManager<RNPlayerView>() {
     /**
      * Native component functions.
      */
@@ -47,12 +47,16 @@ class RNPlayerViewManager(private val context: ReactApplicationContext) : Simple
 
     private var customMessageHandlerBridgeId: NativeId? = null
     private val handler = Handler(Looper.getMainLooper())
+    private var context: ReactContext = context
 
     /**
      * The component's native view factory. RN may call this method multiple times
      * for each component instance.
      */
-    override fun createViewInstance(reactContext: ThemedReactContext) = RNPlayerView(reactContext)
+    override fun createViewInstance(reactContext: ThemedReactContext): RNPlayerView {
+        this.context = reactContext
+        return RNPlayerView(reactContext)
+    }
 
     /**
      * Called when the component's view gets detached from the view hierarchy. Useful to perform
@@ -68,67 +72,67 @@ class RNPlayerViewManager(private val context: ReactApplicationContext) : Simple
      * be accessed from React.
      */
     private val bubblingEventsMapping: Map<String, String> = mapOf(
-        "event" to "onEvent",
-        "playerError" to "onPlayerError",
-        "playerWarning" to "onPlayerWarning",
-        "destroy" to "onDestroy",
-        "muted" to "onMuted",
-        "unmuted" to "onUnmuted",
-        "ready" to "onReady",
-        "paused" to "onPaused",
-        "play" to "onPlay",
-        "playing" to "onPlaying",
-        "playbackFinished" to "onPlaybackFinished",
-        "seek" to "onSeek",
-        "seeked" to "onSeeked",
-        "timeShift" to "onTimeShift",
-        "timeShifted" to "onTimeShifted",
-        "stallStarted" to "onStallStarted",
-        "stallEnded" to "onStallEnded",
-        "timeChanged" to "onTimeChanged",
-        "sourceLoad" to "onSourceLoad",
-        "sourceLoaded" to "onSourceLoaded",
-        "sourceUnloaded" to "onSourceUnloaded",
-        "sourceError" to "onSourceError",
-        "sourceWarning" to "onSourceWarning",
-        "audioAdded" to "onAudioAdded",
-        "audioChanged" to "onAudioChanged",
-        "audioRemoved" to "onAudioRemoved",
-        "subtitleAdded" to "onSubtitleAdded",
-        "subtitleChanged" to "onSubtitleChanged",
-        "subtitleRemoved" to "onSubtitleRemoved",
-        "downloadFinished" to "onDownloadFinished",
-        "videoDownloadQualityChanged" to "onVideoDownloadQualityChanged",
-        "pictureInPictureAvailabilityChanged" to "onPictureInPictureAvailabilityChanged",
-        "pictureInPictureEnter" to "onPictureInPictureEnter",
-        "pictureInPictureExit" to "onPictureInPictureExit",
-        "adBreakFinished" to "onAdBreakFinished",
-        "adBreakStarted" to "onAdBreakStarted",
-        "adClicked" to "onAdClicked",
-        "adError" to "onAdError",
-        "adFinished" to "onAdFinished",
-        "adManifestLoad" to "onAdManifestLoad",
-        "adManifestLoaded" to "onAdManifestLoaded",
-        "adQuartile" to "onAdQuartile",
-        "adScheduled" to "onAdScheduled",
-        "adSkipped" to "onAdSkipped",
-        "adStarted" to "onAdStarted",
-        "videoPlaybackQualityChanged" to "onVideoPlaybackQualityChanged",
-        "fullscreenEnabled" to "onFullscreenEnabled",
-        "fullscreenDisabled" to "onFullscreenDisabled",
-        "fullscreenEnter" to "onFullscreenEnter",
-        "fullscreenExit" to "onFullscreenExit",
-        "castStart" to "onCastStart",
-        "castPlaybackFinished" to "onCastPlaybackFinished",
-        "castPaused" to "onCastPaused",
-        "castPlaying" to "onCastPlaying",
-        "castStarted" to "onCastStarted",
-        "castAvailable" to "onCastAvailable",
-        "castStopped" to "onCastStopped",
-        "castWaitingForDevice" to "onCastWaitingForDevice",
-        "castTimeUpdated" to "onCastTimeUpdated",
-        "cueEnter" to "onCueEnter",
-        "cueExit" to "onCueExit",
+        "event" to "onBmpEvent",
+        "playerError" to "onBmpPlayerError",
+        "playerWarning" to "onBmpPlayerWarning",
+        "destroy" to "onBmpDestroy",
+        "muted" to "onBmpMuted",
+        "unmuted" to "onBmpUnmuted",
+        "ready" to "onBmpReady",
+        "paused" to "onBmpPaused",
+        "play" to "onBmpPlay",
+        "playing" to "onBmpPlaying",
+        "playbackFinished" to "onBmpPlaybackFinished",
+        "seek" to "onBmpSeek",
+        "seeked" to "onBmpSeeked",
+        "timeShift" to "onBmpTimeShift",
+        "timeShifted" to "onBmpTimeShifted",
+        "stallStarted" to "onBmpStallStarted",
+        "stallEnded" to "onBmpStallEnded",
+        "timeChanged" to "onBmpTimeChanged",
+        "sourceLoad" to "onBmpSourceLoad",
+        "sourceLoaded" to "onBmpSourceLoaded",
+        "sourceUnloaded" to "onBmpSourceUnloaded",
+        "sourceError" to "onBmpSourceError",
+        "sourceWarning" to "onBmpSourceWarning",
+        "audioAdded" to "onBmpAudioAdded",
+        "audioChanged" to "onBmpAudioChanged",
+        "audioRemoved" to "onBmpAudioRemoved",
+        "subtitleAdded" to "onBmpSubtitleAdded",
+        "subtitleChanged" to "onBmpSubtitleChanged",
+        "subtitleRemoved" to "onBmpSubtitleRemoved",
+        "downloadFinished" to "onBmpDownloadFinished",
+        "videoDownloadQualityChanged" to "onBmpVideoDownloadQualityChanged",
+        "pictureInPictureAvailabilityChanged" to "onBmpPictureInPictureAvailabilityChanged",
+        "pictureInPictureEnter" to "onBmpPictureInPictureEnter",
+        "pictureInPictureExit" to "onBmpPictureInPictureExit",
+        "adBreakFinished" to "onBmpAdBreakFinished",
+        "adBreakStarted" to "onBmpAdBreakStarted",
+        "adClicked" to "onBmpAdClicked",
+        "adError" to "onBmpAdError",
+        "adFinished" to "onBmpAdFinished",
+        "adManifestLoad" to "onBmpAdManifestLoad",
+        "adManifestLoaded" to "onBmpAdManifestLoaded",
+        "adQuartile" to "onBmpAdQuartile",
+        "adScheduled" to "onBmpAdScheduled",
+        "adSkipped" to "onBmpAdSkipped",
+        "adStarted" to "onBmpAdStarted",
+        "videoPlaybackQualityChanged" to "onBmpVideoPlaybackQualityChanged",
+        "fullscreenEnabled" to "onBmpFullscreenEnabled",
+        "fullscreenDisabled" to "onBmpFullscreenDisabled",
+        "fullscreenEnter" to "onBmpFullscreenEnter",
+        "fullscreenExit" to "onBmpFullscreenExit",
+        "castStart" to "onBmpCastStart",
+        "castPlaybackFinished" to "onBmpCastPlaybackFinished",
+        "castPaused" to "onBmpCastPaused",
+        "castPlaying" to "onBmpCastPlaying",
+        "castStarted" to "onBmpCastStarted",
+        "castAvailable" to "onBmpCastAvailable",
+        "castStopped" to "onBmpCastStopped",
+        "castWaitingForDevice" to "onBmpCastWaitingForDevice",
+        "castTimeUpdated" to "onBmpCastTimeUpdated",
+        "cueEnter" to "onBmpCueEnter",
+        "cueExit" to "onBmpCueExit",
     )
 
     /**
@@ -164,6 +168,7 @@ class RNPlayerViewManager(private val context: ReactApplicationContext) : Simple
         val command = commandId?.toInt()?.toCommand() ?: throw IllegalArgumentException(
             "The received command is not supported by the Bitmovin Player View",
         )
+
         fun <T> T?.require(): T = this ?: throw InvalidParameterException("Missing parameter")
         when (command) {
             Commands.ATTACH_PLAYER -> attachPlayer(view, args?.getString(1).require(), args?.getMap(2))
@@ -172,6 +177,7 @@ class RNPlayerViewManager(private val context: ReactApplicationContext) : Simple
                 view,
                 args?.getString(1).require(),
             )
+
             Commands.SET_FULLSCREEN -> setFullscreen(view, args?.getBoolean(1).require())
             Commands.SET_SCALING_MODE -> setScalingMode(view, args?.getString(1).require())
             Commands.SET_PICTURE_IN_PICTURE -> setPictureInPicture(view, args?.getBoolean(1).require())
@@ -205,13 +211,7 @@ class RNPlayerViewManager(private val context: ReactApplicationContext) : Simple
 
     private fun setPictureInPicture(view: RNPlayerView, isPictureInPictureRequested: Boolean) {
         handler.postAndLogException {
-            val playerView = view.playerView ?: throw IllegalStateException("The player view is not yet created")
-            if (playerView.isPictureInPicture == isPictureInPictureRequested) return@postAndLogException
-            if (isPictureInPictureRequested) {
-                playerView.enterPictureInPicture()
-            } else {
-                playerView.exitPictureInPicture()
-            }
+            view.pictureInPictureRequested(isPictureInPictureRequested)
         }
     }
 
@@ -246,9 +246,6 @@ class RNPlayerViewManager(private val context: ReactApplicationContext) : Simple
             val playbackConfig = playerConfig?.getMap("playbackConfig")
             val isPictureInPictureEnabled = view.config?.pictureInPictureConfig?.isEnabled == true ||
                 playbackConfig?.getBooleanOrNull("isPictureInPictureEnabled") == true
-            val pictureInPictureHandler = view.pictureInPictureHandler ?: RNPictureInPictureHandler(context)
-            view.pictureInPictureHandler = pictureInPictureHandler
-            view.pictureInPictureHandler?.isPictureInPictureEnabled = isPictureInPictureEnabled
 
             val rnStyleConfigWrapper = playerConfig?.toRNStyleConfigWrapperFromPlayerConfig()
             val configuredPlayerViewConfig = view.config?.playerViewConfig ?: PlayerViewConfig()
@@ -272,6 +269,9 @@ class RNPlayerViewManager(private val context: ReactApplicationContext) : Simple
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT,
                 )
+                if (isPictureInPictureEnabled) {
+                    playerView.setPictureInPictureHandler(RNPictureInPictureHandler(currentActivity, player))
+                }
                 view.setPlayerView(playerView)
                 attachCustomMessageHandlerBridge(view)
             }
