@@ -6,6 +6,7 @@ import com.bitmovin.analytics.api.CustomData
 import com.bitmovin.analytics.api.DefaultMetadata
 import com.bitmovin.analytics.api.SourceMetadata
 import com.bitmovin.player.api.DeviceDescription.DeviceName
+import com.bitmovin.player.api.ForceReuseVideoCodecReason
 import com.bitmovin.player.api.PlaybackConfig
 import com.bitmovin.player.api.PlayerConfig
 import com.bitmovin.player.api.TweaksConfig
@@ -170,6 +171,16 @@ fun ReadableMap.toStyleConfig(): StyleConfig = StyleConfig().apply {
 }
 
 /**
+ * Converts any JS string into an `ForceReuseVideoCodecReason` enum value.
+ */
+private fun String.toForceReuseVideoCodecReason(): ForceReuseVideoCodecReason? = when (this) {
+    "ColorInfoMismatch" -> ForceReuseVideoCodecReason.ColorInfoMismatch
+    "MaxInputSizeExceeded" -> ForceReuseVideoCodecReason.MaxInputSizeExceeded
+    "MaxResolutionExceeded" -> ForceReuseVideoCodecReason.MaxResolutionExceeded
+    else -> null
+}
+
+/**
  * Converts any JS object into a `TweaksConfig` object.
  */
 fun ReadableMap.toTweaksConfig(): TweaksConfig = TweaksConfig().apply {
@@ -191,6 +202,12 @@ fun ReadableMap.toTweaksConfig(): TweaksConfig = TweaksConfig().apply {
     withBoolean("useDrmSessionForClearSources") { useDrmSessionForClearSources = it }
     withBoolean("useFiletypeExtractorFallbackForHls") { useFiletypeExtractorFallbackForHls = it }
     withBoolean("preferSoftwareDecodingForAds") { preferSoftwareDecodingForAds = it }
+    withStringArray("forceReuseVideoCodecReasons") {
+        forceReuseVideoCodecReasons = it
+            .filterNotNull()
+            .mapNotNull(String::toForceReuseVideoCodecReason)
+            .toSet()
+    }
 }
 
 /**
@@ -907,6 +924,14 @@ fun String.toMediaType(): MediaType? = when (this) {
     "audio" -> MediaType.Audio
     "video" -> MediaType.Video
     else -> null
+}
+
+data class MediaControlConfig(
+    var isEnabled: Boolean = true,
+)
+
+fun ReadableMap.toMediaControlConfig(): MediaControlConfig = MediaControlConfig().apply {
+    withBoolean("isEnabled") { isEnabled = it }
 }
 
 /**
