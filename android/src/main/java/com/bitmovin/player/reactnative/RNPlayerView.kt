@@ -23,6 +23,7 @@ import com.bitmovin.player.api.event.SourceEvent
 import com.bitmovin.player.api.ui.PlayerViewConfig
 import com.bitmovin.player.api.ui.StyleConfig
 import com.bitmovin.player.reactnative.converter.toJson
+import com.bitmovin.player.reactnative.extensions.playerModule
 import com.bitmovin.player.reactnative.ui.SubtitleViewConfig
 import com.facebook.react.ReactActivity
 import com.facebook.react.bridge.*
@@ -110,8 +111,23 @@ class RNPlayerView(
     private val activityLifecycle = (context.currentActivity as? ReactActivity)?.lifecycle
         ?: error("Trying to create an instance of ${this::class.simpleName} while not attached to a ReactActivity")
 
+    /**
+     * Relays the provided set of events, emitted by the player, together with the associated name
+     * to the `eventOutput` callback.
+     */
+    private var playerEventRelay: EventRelay<Player, Event> = EventRelay<Player, Event>(
+        EVENT_CLASS_TO_REACT_NATIVE_NAME_MAPPING,
+        ::emitEventFromPlayer,
+    )
+
+    internal var enableBackgroundPlayback: Boolean = false
+    var playerInMediaSessionService: Player? = null
+
     private val activityLifecycleObserver = object : DefaultLifecycleObserver {
         override fun onStart(owner: LifecycleOwner) {
+            if (playerInMediaSessionService != null) {
+                playerView?.player = playerInMediaSessionService
+            }
             playerView?.onStart()
         }
 
@@ -124,10 +140,28 @@ class RNPlayerView(
         }
 
         override fun onStop(owner: LifecycleOwner) {
+            removePlayerForBackgroundPlayback()
             playerView?.onStop()
         }
 
         override fun onDestroy(owner: LifecycleOwner) = dispose()
+
+        // When background playback is enabled,
+        // remove player from view so it does not get paused when entering background
+        private fun removePlayerForBackgroundPlayback() {
+            playerInMediaSessionService = null
+            val player = playerView?.player ?: return
+
+            if (!enableBackgroundPlayback) {
+                return
+            }
+            if (context.playerModule?.mediaSessionPlaybackManager?.player != player) {
+                return
+            }
+
+            playerInMediaSessionService = player
+            playerView?.player = null
+        }
     }
 
     init {
@@ -140,15 +174,6 @@ class RNPlayerView(
 
         activityLifecycle.addObserver(activityLifecycleObserver)
     }
-
-    /**
-     * Relays the provided set of events, emitted by the player, together with the associated name
-     * to the `eventOutput` callback.
-     */
-    private val playerEventRelay = EventRelay<Player, Event>(
-        EVENT_CLASS_TO_REACT_NATIVE_NAME_MAPPING,
-        ::emitEventFromPlayer,
-    )
 
     /**
      * Relays the provided set of events, emitted by the player view, together with the associated name
@@ -270,6 +295,14 @@ class RNPlayerView(
         val aspectRatio =
             player?.playbackVideoData
                 ?.let { Rational(it.width, it.height) }
+                ?.let { rational ->
+                    val ratio = rational.toDouble()
+                    when {
+                        ratio < 0.5 -> Rational(1, 2)
+                        ratio > 2.3 -> Rational(23, 10)
+                        else -> rational
+                    }
+                }
                 ?: Rational(16, 9)
 
         val params = PictureInPictureParams.Builder()
@@ -296,7 +329,12 @@ class RNPlayerView(
 
     private fun applyPipConfig() {
         context.currentActivity?.let { activity ->
-            if (!isPictureInPictureAvailable() || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+            if (!isPictureInPictureAvailable() ||
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                _playerView == null
+            ) {
+                return
+            }
 
             val isAutoEnterConfigDisabled = config?.pictureInPictureConfig?.isEnabled != true ||
                 config?.pictureInPictureConfig?.shouldEnterOnBackground != true

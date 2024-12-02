@@ -25,3 +25,5 @@ export * from './playerConfig';
 export * from './liveConfig';
 export * from './bufferApi';
 export * from './network';
+export * from './mediaControlConfig';
+export * from './debug';

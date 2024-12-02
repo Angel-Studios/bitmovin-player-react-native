@@ -2779,6 +2779,29 @@ declare enum UserInterfaceType {
 }
 
 /**
+ * When switching the video quality, the video decoder's configuration might change
+ * as the player can't always know if the codec supports such configuration change, it destroys and recreates it.
+ * This behaviour can cause brief black screens when switching between video qualities as codec recreation can be slow.
+ *
+ * If a codec is know to support a given configuration change without issues,
+ * the configuration can be added to the `TweaksConfig.forceReuseVideoCodecReasons`
+ * to always reuse the video codec and avoid the black screen.
+ */
+declare enum ForceReuseVideoCodecReason {
+    /**
+     * The new video quality color information is not compatible.
+     */
+    ColorInfoMismatch = "ColorInfoMismatch",
+    /**
+     * The new video quality exceed the decoder's configured maximum sample size.
+     */
+    MaxInputSizeExceeded = "MaxInputSizeExceeded",
+    /**
+     * The new video quality exceed the decoder's configured maximum resolution.
+     */
+    MaxResolutionExceeded = "MaxResolutionExceeded"
+}
+/**
  * This configuration is used as an incubator for experimental features. Tweaks are not officially
  * supported and are not guaranteed to be stable, i.e. their naming, functionality and API can
  * change at any time within the tweaks or when being promoted to an official feature and moved
@@ -2946,9 +2969,24 @@ interface TweaksConfig {
      *
      * Default is `true`.
      *
+     * @deprecated To enable the Now Playing information use {@link MediaControlConfig.isEnabled}
      * @platform iOS
      */
     updatesNowPlayingInfoCenter?: boolean;
+    /**
+     * When switching between video formats (eg: adapting between video qualities)
+     * the codec might be recreated due to several reasons.
+     * This behaviour can cause brief black screens when switching between video qualities as codec recreation can be
+     * slow.
+     *
+     * If a device is know to support video format changes and keep the current decoder without issues,
+     * this set can be filled with multiple `ForceReuseVideoCodecReason` and avoid the black screen.
+     *
+     * Default is `null` i.e not set
+     *
+     * @platform Android
+     */
+    forceReuseVideoCodecReasons?: Array<ForceReuseVideoCodecReason>;
 }
 
 /**
@@ -3080,19 +3118,22 @@ interface PlaybackConfig {
      * When set to `true`, also make sure to properly configure your app to allow
      * background playback.
      *
-     * On tvOS, background playback is only supported for audio-only content.
-     *
      * Default is `false`.
+     *
+     * @note
+     * On Android, {@link MediaControlConfig.isEnabled} has to be `true` for
+     * background playback to work.
+     * @note
+     * On tvOS, background playback is only supported for audio-only content.
      *
      *  @example
      * ```
      * const player = new Player({
-     *   {
+     *   playbackConfig: {
      *     isBackgroundPlaybackEnabled: true,
-     *   }
-     * })
+     *   },
+     * });
      * ```
-     * @platform iOS, tvOS
      */
     isBackgroundPlaybackEnabled?: boolean;
     /**
@@ -3121,6 +3162,66 @@ interface LiveConfig {
      * This value should always be non-positive value, default value is `-40`.
      */
     minTimeshiftBufferDepth?: number;
+}
+
+/**
+ * Configures the media control information for the application. This information will be displayed
+ * wherever current media information typically appears, such as the lock screen, in notifications, and
+ * and inside the control center.
+ */
+interface MediaControlConfig {
+    /**
+     * Enable the default behavior of displaying media information
+     * on the lock screen, in notifications, and within the control center.
+     *
+     * Default is `true`.
+     *
+     * For a detailed list of the supported features in the **default behavior**,
+     * check the **Default Supported Features** section.
+     *
+     * @note Enabling this flag will automatically treat {@link TweaksConfig.updatesNowPlayingInfoCenter} as `false`.
+     *
+     * ## Limitations
+     * ---
+     * - Android: If an app creates multiple player instances, the player shown in media controls is the latest one created having media controls enabled.
+     * - At the moment, the current media information is disabled during casting.
+     *
+     * ## Known Issues
+     * ---
+     * **iOS**:
+     * - There is unexpected behavior when using the IMA SDK. The Google IMA SDK adds its own commands
+     *   for play/pause as soon as the ad starts loading (not when it starts playing). Within this window
+     *   (approximately around 10 seconds), it is possible that both the ad and the main content are playing
+     *   at the same time when a user interacts with the media control feature.
+     *
+     * ## Default Supported Features
+     * ---
+     * Here is the list of features supported by the default behavior.
+     *
+     * ### Populated Metadata
+     * - media type (to visualize the correct kind of data — _e.g. a waveform for audio files_)
+     * - title
+     * - artwork
+     * - elapsed time
+     * - duration
+     *
+     * **Android-only**
+     * - source description
+     *
+     * **iOS-only**
+     * - live or VOD status
+     * - playback rate
+     * - default playback rate
+     *
+     * ### Registered Commands
+     * - toggle play/pause
+     * - change playback position
+     *
+     * **iOS-only**
+     * - skip forward
+     * - skip backward
+     */
+    isEnabled?: boolean;
 }
 
 /**
@@ -3186,6 +3287,12 @@ interface PlayerConfig extends NativeInstanceConfig {
      * Configures network request manipulation functionality. A default {@link NetworkConfig} is set initially.
      */
     networkConfig?: NetworkConfig;
+    /**
+     * Configures the media control information for the application. This information will be displayed
+     * wherever current media information typically appears, such as the lock screen, in notifications,
+     * and inside the control center.
+     */
+    mediaControlConfig?: MediaControlConfig;
 }
 
 /**
@@ -3932,4 +4039,50 @@ declare class Network extends NativeInstance<NetworkConfig> {
     onPreprocessHttpResponse: (responseId: string, type: HttpRequestType, response: HttpResponse) => void;
 }
 
-export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AdaptationConfig, AdvertisingConfig, AnalyticsApi, AnalyticsConfig, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, AudioSession, AudioSessionCategory, AudioTrack, BasePlayerViewProps, BitmovinCastManager, BitmovinCastManagerOptions, BitmovinNativeOfflineEventData, BufferApi, BufferConfig, BufferLevel, BufferLevels, BufferMediaTypeConfig, BufferType, CastAvailableEvent, CastPausedEvent, CastPayload, CastPlaybackFinishedEvent, CastPlayingEvent, CastStartEvent, CastStartedEvent, CastStoppedEvent, CastTimeUpdatedEvent, CastWaitingForDeviceEvent, CueEnterEvent, CueExitEvent, CustomDataConfig, CustomMessageHandler, CustomMessageHandlerProps, CustomUi, DefaultMetadata, DestroyEvent, DownloadFinishedEvent, Drm, DrmConfig, ErrorEvent, Event, EventSource, FairplayConfig, FullscreenDisabledEvent, FullscreenEnabledEvent, FullscreenEnterEvent, FullscreenExitEvent, FullscreenHandler, HttpRequest, HttpRequestType, HttpResponse, LiveConfig, LoadingState, MediaType, MutedEvent, Network, NetworkConfig, OfflineContentConfig, OfflineContentManager, OfflineContentManagerListener, OfflineContentOptionEntry, OfflineContentOptions, OfflineDownloadRequest, OfflineEvent, OfflineEventType, OfflineSourceOptions, OfflineState, OnCanceledEvent, OnCompletedEvent, OnDrmLicenseExpiredEvent, OnDrmLicenseUpdatedEvent, OnErrorEvent, OnOptionsAvailableEvent, OnProgressEvent, OnResumedEvent, OnSuspendedEvent, PausedEvent, PictureInPictureAvailabilityChangedEvent, PictureInPictureConfig, PictureInPictureEnterEvent, PictureInPictureEnteredEvent, PictureInPictureExitEvent, PictureInPictureExitedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, PlaybackSpeedChangedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewConfig, PlayerViewEvents, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, RemoteControlConfig, ScalingMode, SeekEvent, SeekPosition, SeekedEvent, SideLoadedSubtitleTrack, SmallScreenUi, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceMetadata, SourceOptions, SourceRemoteControlConfig, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, Thumbnail, TimeChangedEvent, TimeShiftEvent, TimeShiftedEvent, TimelineReferencePoint, TvUi, TweaksConfig, UiConfig, UnmutedEvent, UserInterfaceType, Variant, VideoDownloadQualityChangedEvent, VideoPlaybackQualityChangedEvent, VideoQuality, WebUiConfig, WidevineConfig, usePlayer };
+/**
+ * Global debug configuration for all Bitmovin components.
+ */
+declare class DebugConfig {
+    private static _isDebugEnabled;
+    /**
+     * Retrieves the current debug logging state.
+     *
+     * @returns `true` if debug logging is enabled, otherwise `false`.
+     */
+    static get isDebugLoggingEnabled(): boolean;
+    /**
+     * Enables or disables global debug logging for all Bitmovin components.
+     *
+     * Debug logging provides detailed information primarily for debugging purposes,
+     * helping to diagnose problems and trace the flow of execution within the Player.
+     *
+     * ### Warning:
+     * This option **should not be enabled in production** as it may log sensitive or confidential
+     * information to the console.
+     *
+     * ## Platform-Specific Logging Behavior
+     * ---
+     * - **iOS:** logs are printed using `NSLog` at the verbose log level.
+     * - **Android:** logs are printed using `android.util.Log` with the following tags:
+     *   - `BitmovinPlayer`
+     *   - `BitmovinPlayerView`
+     *   - `BitmovinOffline`
+     *   - `BitmovinSource`
+     *   - `BitmovinExoPlayer`
+     *
+     * ## Limitations
+     * ---
+     * **Android**
+     * - This flag **must** be set **before** creating any Bitmovin component to take effect.
+     *
+     * ## Usage Notes
+     * ---
+     * - We recommend setting this flag during your app's initialization phase, such as in the
+     *   application's entry point (e.g. `App.tsx`).
+     *
+     * @defaultValue `false`
+     */
+    static setDebugLoggingEnabled(value: boolean): Promise<void>;
+}
+
+export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AdaptationConfig, AdvertisingConfig, AnalyticsApi, AnalyticsConfig, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, AudioSession, AudioSessionCategory, AudioTrack, BasePlayerViewProps, BitmovinCastManager, BitmovinCastManagerOptions, BitmovinNativeOfflineEventData, BufferApi, BufferConfig, BufferLevel, BufferLevels, BufferMediaTypeConfig, BufferType, CastAvailableEvent, CastPausedEvent, CastPayload, CastPlaybackFinishedEvent, CastPlayingEvent, CastStartEvent, CastStartedEvent, CastStoppedEvent, CastTimeUpdatedEvent, CastWaitingForDeviceEvent, CueEnterEvent, CueExitEvent, CustomDataConfig, CustomMessageHandler, CustomMessageHandlerProps, CustomUi, DebugConfig, DefaultMetadata, DestroyEvent, DownloadFinishedEvent, Drm, DrmConfig, ErrorEvent, Event, EventSource, FairplayConfig, ForceReuseVideoCodecReason, FullscreenDisabledEvent, FullscreenEnabledEvent, FullscreenEnterEvent, FullscreenExitEvent, FullscreenHandler, HttpRequest, HttpRequestType, HttpResponse, LiveConfig, LoadingState, MediaControlConfig, MediaType, MutedEvent, Network, NetworkConfig, OfflineContentConfig, OfflineContentManager, OfflineContentManagerListener, OfflineContentOptionEntry, OfflineContentOptions, OfflineDownloadRequest, OfflineEvent, OfflineEventType, OfflineSourceOptions, OfflineState, OnCanceledEvent, OnCompletedEvent, OnDrmLicenseExpiredEvent, OnDrmLicenseUpdatedEvent, OnErrorEvent, OnOptionsAvailableEvent, OnProgressEvent, OnResumedEvent, OnSuspendedEvent, PausedEvent, PictureInPictureAvailabilityChangedEvent, PictureInPictureConfig, PictureInPictureEnterEvent, PictureInPictureEnteredEvent, PictureInPictureExitEvent, PictureInPictureExitedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, PlaybackSpeedChangedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewConfig, PlayerViewEvents, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, RemoteControlConfig, ScalingMode, SeekEvent, SeekPosition, SeekedEvent, SideLoadedSubtitleTrack, SmallScreenUi, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceMetadata, SourceOptions, SourceRemoteControlConfig, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, Thumbnail, TimeChangedEvent, TimeShiftEvent, TimeShiftedEvent, TimelineReferencePoint, TvUi, TweaksConfig, UiConfig, UnmutedEvent, UserInterfaceType, Variant, VideoDownloadQualityChangedEvent, VideoPlaybackQualityChangedEvent, VideoQuality, WebUiConfig, WidevineConfig, usePlayer };
