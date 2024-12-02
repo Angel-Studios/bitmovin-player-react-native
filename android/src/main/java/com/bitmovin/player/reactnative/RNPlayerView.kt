@@ -331,7 +331,8 @@ class RNPlayerView(
         context.currentActivity?.let { activity ->
             if (!isPictureInPictureAvailable() ||
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-                _playerView == null ) {
+                _playerView == null
+            ) {
                 return
             }
 
