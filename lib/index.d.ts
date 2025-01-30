@@ -3774,13 +3774,6 @@ interface PictureInPictureConfig {
     shouldEnterOnBackground?: boolean;
 }
 
-interface SubtitleViewConfig {
-    paddingLeft?: number;
-    paddingTop?: number;
-    paddingRight?: number;
-    paddingBottom?: number;
-}
-
 /**
  * Configures the visual presentation and behaviour of the `PlayerView`.
  */
@@ -3806,7 +3799,17 @@ interface PlayerViewConfig {
      * To reliably hide the first frame before a pre-roll ad, please ensure that you are using the {@link AdvertisingConfig} to schedule ads and not the {@link Player.scheduleAd} API call.
      */
     hideFirstFrame?: boolean;
-    subtitleViewConfig?: SubtitleViewConfig;
+    /**
+     * Specify on which surface type the video should be rendered.
+     *
+     * See {@link https://developer.android.com/guide/topics/media/ui/playerview#surfacetype|Choosing a surface type}
+     * for more information.
+     *
+     * Default is {@link SurfaceType.SurfaceView}.
+     *
+     * @platform Android
+     */
+    surfaceType?: SurfaceType;
 }
 /**
  * Configures the visual presentation and behaviour of the Bitmovin Player UI.
@@ -3866,6 +3869,21 @@ declare class TvUi extends Variant {
 }
 declare class CustomUi extends Variant {
     constructor(uiManagerFactoryFunction: string);
+}
+/**
+ * The type of surface on which to render video.
+ *
+ * See {@link https://developer.android.com/guide/topics/media/ui/playerview#surfacetype|Choosing a surface type}
+ * for more information.
+ */
+declare enum SurfaceType {
+    /**
+     * SurfaceView generally causes lower battery consumption,
+     * and has better handling for HDR and secure content.
+     */
+    SurfaceView = "SurfaceView",
+    /** TextureView is sometime needed for smooth animations. */
+    TextureView = "TextureView"
 }
 
 /**
@@ -4085,4 +4103,4 @@ declare class DebugConfig {
     static setDebugLoggingEnabled(value: boolean): Promise<void>;
 }
 
-export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AdaptationConfig, AdvertisingConfig, AnalyticsApi, AnalyticsConfig, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, AudioSession, AudioSessionCategory, AudioTrack, BasePlayerViewProps, BitmovinCastManager, BitmovinCastManagerOptions, BitmovinNativeOfflineEventData, BufferApi, BufferConfig, BufferLevel, BufferLevels, BufferMediaTypeConfig, BufferType, CastAvailableEvent, CastPausedEvent, CastPayload, CastPlaybackFinishedEvent, CastPlayingEvent, CastStartEvent, CastStartedEvent, CastStoppedEvent, CastTimeUpdatedEvent, CastWaitingForDeviceEvent, CueEnterEvent, CueExitEvent, CustomDataConfig, CustomMessageHandler, CustomMessageHandlerProps, CustomUi, DebugConfig, DefaultMetadata, DestroyEvent, DownloadFinishedEvent, Drm, DrmConfig, ErrorEvent, Event, EventSource, FairplayConfig, ForceReuseVideoCodecReason, FullscreenDisabledEvent, FullscreenEnabledEvent, FullscreenEnterEvent, FullscreenExitEvent, FullscreenHandler, HttpRequest, HttpRequestType, HttpResponse, LiveConfig, LoadingState, MediaControlConfig, MediaType, MutedEvent, Network, NetworkConfig, OfflineContentConfig, OfflineContentManager, OfflineContentManagerListener, OfflineContentOptionEntry, OfflineContentOptions, OfflineDownloadRequest, OfflineEvent, OfflineEventType, OfflineSourceOptions, OfflineState, OnCanceledEvent, OnCompletedEvent, OnDrmLicenseExpiredEvent, OnDrmLicenseUpdatedEvent, OnErrorEvent, OnOptionsAvailableEvent, OnProgressEvent, OnResumedEvent, OnSuspendedEvent, PausedEvent, PictureInPictureAvailabilityChangedEvent, PictureInPictureConfig, PictureInPictureEnterEvent, PictureInPictureEnteredEvent, PictureInPictureExitEvent, PictureInPictureExitedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, PlaybackSpeedChangedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewConfig, PlayerViewEvents, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, RemoteControlConfig, ScalingMode, SeekEvent, SeekPosition, SeekedEvent, SideLoadedSubtitleTrack, SmallScreenUi, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceMetadata, SourceOptions, SourceRemoteControlConfig, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, Thumbnail, TimeChangedEvent, TimeShiftEvent, TimeShiftedEvent, TimelineReferencePoint, TvUi, TweaksConfig, UiConfig, UnmutedEvent, UserInterfaceType, Variant, VideoDownloadQualityChangedEvent, VideoPlaybackQualityChangedEvent, VideoQuality, WebUiConfig, WidevineConfig, usePlayer };
+export { Ad, AdBreak, AdBreakFinishedEvent, AdBreakStartedEvent, AdClickedEvent, AdConfig, AdData, AdErrorEvent, AdFinishedEvent, AdItem, AdManifestLoadEvent, AdManifestLoadedEvent, AdQuartile, AdQuartileEvent, AdScheduledEvent, AdSkippedEvent, AdSource, AdSourceType, AdStartedEvent, AdaptationConfig, AdvertisingConfig, AnalyticsApi, AnalyticsConfig, AudioAddedEvent, AudioChangedEvent, AudioRemovedEvent, AudioSession, AudioSessionCategory, AudioTrack, BasePlayerViewProps, BitmovinCastManager, BitmovinCastManagerOptions, BitmovinNativeOfflineEventData, BufferApi, BufferConfig, BufferLevel, BufferLevels, BufferMediaTypeConfig, BufferType, CastAvailableEvent, CastPausedEvent, CastPayload, CastPlaybackFinishedEvent, CastPlayingEvent, CastStartEvent, CastStartedEvent, CastStoppedEvent, CastTimeUpdatedEvent, CastWaitingForDeviceEvent, CueEnterEvent, CueExitEvent, CustomDataConfig, CustomMessageHandler, CustomMessageHandlerProps, CustomUi, DebugConfig, DefaultMetadata, DestroyEvent, DownloadFinishedEvent, Drm, DrmConfig, ErrorEvent, Event, EventSource, FairplayConfig, ForceReuseVideoCodecReason, FullscreenDisabledEvent, FullscreenEnabledEvent, FullscreenEnterEvent, FullscreenExitEvent, FullscreenHandler, HttpRequest, HttpRequestType, HttpResponse, LiveConfig, LoadingState, MediaControlConfig, MediaType, MutedEvent, Network, NetworkConfig, OfflineContentConfig, OfflineContentManager, OfflineContentManagerListener, OfflineContentOptionEntry, OfflineContentOptions, OfflineDownloadRequest, OfflineEvent, OfflineEventType, OfflineSourceOptions, OfflineState, OnCanceledEvent, OnCompletedEvent, OnDrmLicenseExpiredEvent, OnDrmLicenseUpdatedEvent, OnErrorEvent, OnOptionsAvailableEvent, OnProgressEvent, OnResumedEvent, OnSuspendedEvent, PausedEvent, PictureInPictureAvailabilityChangedEvent, PictureInPictureConfig, PictureInPictureEnterEvent, PictureInPictureEnteredEvent, PictureInPictureExitEvent, PictureInPictureExitedEvent, PlayEvent, PlaybackConfig, PlaybackFinishedEvent, PlaybackSpeedChangedEvent, Player, PlayerActiveEvent, PlayerConfig, PlayerErrorEvent, PlayerView, PlayerViewConfig, PlayerViewEvents, PlayerViewProps, PlayerWarningEvent, PlayingEvent, ReadyEvent, RemoteControlConfig, ScalingMode, SeekEvent, SeekPosition, SeekedEvent, SideLoadedSubtitleTrack, SmallScreenUi, Source, SourceConfig, SourceErrorEvent, SourceLoadEvent, SourceLoadedEvent, SourceMetadata, SourceOptions, SourceRemoteControlConfig, SourceType, SourceUnloadedEvent, SourceWarningEvent, StallEndedEvent, StallStartedEvent, StyleConfig, SubtitleAddedEvent, SubtitleChangedEvent, SubtitleFormat, SubtitleRemovedEvent, SubtitleTrack, SurfaceType, Thumbnail, TimeChangedEvent, TimeShiftEvent, TimeShiftedEvent, TimelineReferencePoint, TvUi, TweaksConfig, UiConfig, UnmutedEvent, UserInterfaceType, Variant, VideoDownloadQualityChangedEvent, VideoPlaybackQualityChangedEvent, VideoQuality, WebUiConfig, WidevineConfig, usePlayer };
