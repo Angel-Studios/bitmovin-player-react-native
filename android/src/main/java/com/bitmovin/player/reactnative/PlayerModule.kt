@@ -109,9 +109,7 @@ class PlayerModule(context: ReactApplicationContext) : BitmovinBaseModule(contex
         }
 
         if (enableMediaSession) {
-            promise.unit.resolveOnUiThread {
-                mediaSessionPlaybackManager.setupMediaSessionPlayback(nativeId)
-            }
+            mediaSessionPlaybackManager.setupMediaSessionPlayback(nativeId)
         }
     }
 
