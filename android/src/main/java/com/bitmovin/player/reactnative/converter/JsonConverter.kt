@@ -51,6 +51,7 @@ import com.bitmovin.player.api.source.TimelineReferencePoint
 import com.bitmovin.player.api.ui.PlayerViewConfig
 import com.bitmovin.player.api.ui.ScalingMode
 import com.bitmovin.player.api.ui.StyleConfig
+import com.bitmovin.player.api.ui.SurfaceType
 import com.bitmovin.player.api.ui.UiConfig
 import com.bitmovin.player.reactnative.BitmovinCastManagerOptions
 import com.bitmovin.player.reactnative.PictureInPictureConfig
@@ -782,7 +783,14 @@ fun ReadableMap.toSubtitleViewConfig(): SubtitleViewConfig = SubtitleViewConfig(
 fun ReadableMap.toPlayerViewConfig(): PlayerViewConfig = PlayerViewConfig(
     uiConfig = getMap("uiConfig")?.toUiConfig() ?: UiConfig.WebUi(),
     hideFirstFrame = getBooleanOrNull("hideFirstFrame") ?: false,
+    surfaceType = getString("surfaceType")?.toSurfaceType() ?: SurfaceType.SurfaceView,
 )
+
+private fun String.toSurfaceType(): SurfaceType? = when (this) {
+    "SurfaceView" -> SurfaceType.SurfaceView
+    "TextureView" -> SurfaceType.TextureView
+    else -> null
+}
 
 private fun ReadableMap.toUiConfig(): UiConfig {
     val variant = toVariant() ?: UiConfig.WebUi.Variant.SmallScreenUi
