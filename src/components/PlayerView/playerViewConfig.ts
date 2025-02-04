@@ -29,7 +29,22 @@ export interface PlayerViewConfig {
    */
   hideFirstFrame?: boolean;
 
+  /**
+   * Provides options to configure the subtitle view.
+   */
   subtitleViewConfig?: SubtitleViewConfig;
+
+  /**
+   * Specify on which surface type the video should be rendered.
+   *
+   * See {@link https://developer.android.com/guide/topics/media/ui/playerview#surfacetype|Choosing a surface type}
+   * for more information.
+   *
+   * Default is {@link SurfaceType.SurfaceView}.
+   *
+   * @platform Android
+   */
+  surfaceType?: SurfaceType;
 }
 
 /**
@@ -99,4 +114,20 @@ export class CustomUi extends Variant {
   constructor(uiManagerFactoryFunction: string) {
     super(uiManagerFactoryFunction);
   }
+}
+
+/**
+ * The type of surface on which to render video.
+ *
+ * See {@link https://developer.android.com/guide/topics/media/ui/playerview#surfacetype|Choosing a surface type}
+ * for more information.
+ */
+export enum SurfaceType {
+  /**
+   * SurfaceView generally causes lower battery consumption,
+   * and has better handling for HDR and secure content.
+   */
+  SurfaceView = 'SurfaceView',
+  /** TextureView is sometime needed for smooth animations. */
+  TextureView = 'TextureView',
 }
