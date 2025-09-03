@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,6 +20,20 @@ import {
 } from 'bitmovin-player-react-native';
 import { useTVGestures } from '../hooks';
 import OfflineManagementView from '../components/OfflineManagementView';
+
+export async function requestNotificationPermissionAsync() {
+  if (Platform.OS === 'android') {
+    // Importing expo-notifications only on Android to avoid crash on tvOS simulator.
+    const Notifications = require('expo-notifications');
+    const settings = await Notifications.getPermissionsAsync();
+    if (settings.status !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      return status === 'granted';
+    }
+    return true;
+  }
+  return true;
+}
 
 function prettyPrint(header: string, obj: any) {
   console.log(header, JSON.stringify(obj, null, 2));
@@ -48,10 +63,10 @@ const initialDownloadRequest: OfflineDownloadRequest = {
 
 const STABLE_CONTENT_IDENTIFIER = 'sintel-content-id';
 const sourceConfig: SourceConfig = {
-  url: 'https://cdn.bitmovin.com/content/assets/sintel/hls/playlist.m3u8',
+  url: 'https://cdn.bitmovin.com/content/internal/assets/sintel/hls/playlist.m3u8',
   type: SourceType.HLS,
   title: 'Sintel',
-  poster: 'https://cdn.bitmovin.com/content/assets/sintel/poster.png',
+  poster: 'https://cdn.bitmovin.com/content/internal/assets/sintel/poster.png',
 };
 
 export default function OfflinePlayback() {
@@ -93,6 +108,12 @@ export default function OfflinePlayback() {
       isCastEnabled: false,
     },
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      requestNotificationPermissionAsync();
+    }, [])
+  );
 
   useFocusEffect(useCallback(() => () => player.destroy(), [player]));
 
@@ -177,18 +198,19 @@ export default function OfflinePlayback() {
             }}
           />
         )}
-        {downloadState === OfflineState.Downloaded && !isLoadedSourceOffline && (
-          <Action
-            text={'Load offline content'}
-            onPress={() => {
-              if (offlineContentManager != null) {
-                onEvent('Loading the offline video');
-                player.loadOfflineContent(offlineContentManager);
-                setIsLoadedSourceOffline(true);
-              }
-            }}
-          />
-        )}
+        {downloadState === OfflineState.Downloaded &&
+          !isLoadedSourceOffline && (
+            <Action
+              text={'Load offline content'}
+              onPress={() => {
+                if (offlineContentManager != null) {
+                  onEvent('Loading the offline video');
+                  player.loadOfflineContent(offlineContentManager);
+                  setIsLoadedSourceOffline(true);
+                }
+              }}
+            />
+          )}
         {downloadState === OfflineState.NotDownloaded && (
           <Action
             text={'Download'}

@@ -17,11 +17,15 @@ import CustomPlayback from './screens/CustomPlayback';
 import BasicPictureInPicture from './screens/BasicPictureInPicture';
 import CustomHtmlUi from './screens/CustomHtmlUi';
 import BasicFullscreenHandling from './screens/BasicFullscreenHandling';
-import LandscapeFullscreenHandling from './screens/LandscapeFullscreenHandling';
+// Import LandscapeFullscreenHandling only on non-TV platforms
+const LandscapeFullscreenHandling = Platform.isTV
+  ? () => null
+  : require('./screens/LandscapeFullscreenHandling').default;
 import SystemUI from './screens/SystemUi';
 import OfflinePlayback from './screens/OfflinePlayback';
 import Casting from './screens/Casting';
 import BackgroundPlayback from './screens/BackgroundPlayback';
+import * as Device from 'expo-device';
 
 export type RootStackParamsList = {
   ExamplesList: {
@@ -68,12 +72,14 @@ const RootStack = createNativeStackNavigator<RootStackParamsList>();
 
 const isTVOS = Platform.OS === 'ios' && Platform.isTV;
 const isAndroidTV = Platform.OS === 'android' && Platform.isTV;
+const isIOSSimulator = Device.osName === 'iOS' && Device.isDevice === false;
+const isTVOSSimulator = Device.osName === 'tvOS' && Device.isDevice === false;
 
 export default function App() {
   useEffect(() => {
     // iOS audio session category must be set to `playback` first, otherwise playback
     // will have no audio when the device is silenced.
-    // This is also required to make Picture in Picture work on iOS.
+    // This is also required to make Picture in Picture work on iOS and tvOS.
     //
     // Usually it's desireable to set the audio's category only once during your app's main component
     // initialization. This way you can guarantee that your app's audio category is properly
@@ -103,10 +109,6 @@ export default function App() {
         routeName: 'SubtitlePlayback' as keyof RootStackParamsList,
       },
       {
-        title: 'Basic Picture in Picture',
-        routeName: 'BasicPictureInPicture' as keyof RootStackParamsList,
-      },
-      {
         title: 'Basic Ads',
         routeName: 'BasicAds' as keyof RootStackParamsList,
       },
@@ -134,9 +136,18 @@ export default function App() {
       routeName: 'CustomHtmlUi',
     });
 
+    if (!isIOSSimulator) {
+      stackParams.data.push({
+        title: 'Offline playback',
+        routeName: 'OfflinePlayback',
+      });
+    }
+  }
+
+  if (!isTVOSSimulator && !isIOSSimulator) {
     stackParams.data.push({
-      title: 'Offline playback',
-      routeName: 'OfflinePlayback',
+      title: 'Basic Picture in Picture',
+      routeName: 'BasicPictureInPicture' as keyof RootStackParamsList,
     });
   }
 
@@ -176,14 +187,16 @@ export default function App() {
           options={({ navigation }) => ({
             title: 'Examples',
             // eslint-disable-next-line react/no-unstable-nested-components
-            headerRight: () => (
-              <Button
-                title="Custom"
-                onPress={() => {
-                  navigation.navigate('CustomPlaybackForm');
-                }}
-              />
-            ),
+            headerRight: !Platform.isTV
+              ? () => (
+                  <Button
+                    title="Custom"
+                    onPress={() => {
+                      navigation.navigate('CustomPlaybackForm');
+                    }}
+                  />
+                )
+              : undefined,
           })}
           initialParams={stackParams}
         />
@@ -231,25 +244,31 @@ export default function App() {
             options={{ title: 'Offline Playback' }}
           />
         )}
-        <RootStack.Screen
-          name="CustomPlaybackForm"
-          component={CustomPlaybackForm}
-          options={{ title: 'Custom playback' }}
-        />
-        <RootStack.Screen
-          name="CustomPlayback"
-          component={CustomPlayback}
-          options={{ title: 'Custom playback' }}
-        />
-        <RootStack.Screen
-          name="BasicPictureInPicture"
-          component={BasicPictureInPicture}
-          options={{
-            title: 'Basic Picture in Picture',
-            // eslint-disable-next-line react/no-unstable-nested-components
-            headerRight: () => <Button title="Enter PiP" />,
-          }}
-        />
+        {!Platform.isTV && (
+          <RootStack.Screen
+            name="CustomPlaybackForm"
+            component={CustomPlaybackForm}
+            options={{ title: 'Custom playback' }}
+          />
+        )}
+        {!Platform.isTV && (
+          <RootStack.Screen
+            name="CustomPlayback"
+            component={CustomPlayback}
+            options={{ title: 'Custom playback' }}
+          />
+        )}
+        {!isTVOSSimulator && !isIOSSimulator && (
+          <RootStack.Screen
+            name="BasicPictureInPicture"
+            component={BasicPictureInPicture}
+            options={{
+              title: 'Basic Picture in Picture',
+              // eslint-disable-next-line react/no-unstable-nested-components
+              headerRight: () => <Button title="Enter PiP" />,
+            }}
+          />
+        )}
         {!isTVOS && (
           <RootStack.Screen
             name="CustomHtmlUi"

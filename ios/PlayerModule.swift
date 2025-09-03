@@ -1,129 +1,214 @@
-// swiftlint:disable file_length
 import BitmovinPlayer
+import ExpoModulesCore
 
-@objc(PlayerModule)
-public class PlayerModule: NSObject, RCTBridgeModule { // swiftlint:disable:this type_body_length
-    // swiftlint:disable:next implicitly_unwrapped_optional
-    @objc public var bridge: RCTBridge!
-
-    /// In-memory mapping from `nativeId`s to `Player` instances.
-    private var players: Registry<Player> = [:]
-
-    // swiftlint:disable:next implicitly_unwrapped_optional
-    public static func moduleName() -> String! {
-        "PlayerModule"
-    }
-
-    public static func requiresMainQueueSetup() -> Bool {
-        true
-    }
-
-    // swiftlint:disable:next implicitly_unwrapped_optional
-    public var methodQueue: DispatchQueue! {
-        bridge.uiManager.methodQueue
-    }
-
-    deinit {
-        // Destroy all players on the main thread when the module is deallocated.
-        // This is necessary when the IMA SDK is present in the app, as it may crash if the players are destroyed on a
-        // background thread.
-        DispatchQueue.main.async { [players] in
-            players.values.forEach { $0.destroy() }
-        }
-    }
-
-    /**
-     Fetches the `Player` instance associated with `nativeId` from the internal players.
-     - Parameter nativeId: `Player` instance ID.
-     - Returns: The associated `Player` instance or `nil`.
-     */
-    @objc
-    func retrieve(_ nativeId: NativeId) -> Player? {
-        players[nativeId]
-    }
-
-    /**
-     Creates a new `Player` instance inside the internal players using the provided `config` object.
-     - Parameter config: `PlayerConfig` object received from JS.
-     */
-    @objc(initWithConfig:config:networkNativeId:)
-    func initWithConfig(
-        _ nativeId: NativeId,
-        config: Any?,
-        networkNativeId: NativeId?
-    ) {
-        bridge.uiManager.addUIBlock { [weak self] _, _ in
-            guard
-                self?.players[nativeId] == nil,
-                let playerConfig = RCTConvert.playerConfig(config)
-            else {
-                return
+public class PlayerModule: Module {
+    // swiftlint:disable:next function_body_length
+    public func definition() -> ModuleDefinition {
+        Name("PlayerModule")
+        OnCreate {}
+        OnDestroy {
+            // Destroy all players on the main thread when the module is deallocated.
+            // This is necessary when the IMA SDK is present in the app,
+            // as it may crash if the players are destroyed on a background thread.
+            DispatchQueue.main.async {
+                PlayerRegistry.getAllPlayers().forEach { $0.destroy() }
+                PlayerRegistry.clear()
             }
-#if os(iOS)
+        }
+        AsyncFunction("play") { (nativeId: NativeId) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.play()
+        }.runOnQueue(.main)
+        AsyncFunction("pause") { (nativeId: NativeId) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.pause()
+        }.runOnQueue(.main)
+        AsyncFunction("mute") { (nativeId: NativeId) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.mute()
+        }.runOnQueue(.main)
+        AsyncFunction("unmute") { (nativeId: NativeId) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.unmute()
+        }.runOnQueue(.main)
+        AsyncFunction("seek") { (nativeId: NativeId, time: Double) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.seek(time: time)
+        }.runOnQueue(.main)
+        AsyncFunction("timeShift") { (nativeId: NativeId, offset: Double) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.timeShift = offset
+        }.runOnQueue(.main)
+        AsyncFunction("destroy") { (nativeId: NativeId) in
+            if let player = PlayerRegistry.getPlayer(nativeId: nativeId) {
+                player.destroy()
+                PlayerRegistry.unregister(nativeId: nativeId)
+            }
+        }.runOnQueue(.main)
+        AsyncFunction("setVolume") { (nativeId: NativeId, volume: Int) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.volume = volume
+        }.runOnQueue(.main)
+        AsyncFunction("unload") { (nativeId: NativeId) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.unload()
+        }.runOnQueue(.main)
+        AsyncFunction("setPlaybackSpeed") { (nativeId: NativeId, playbackSpeed: Float) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.playbackSpeed = playbackSpeed
+        }.runOnQueue(.main)
+        AsyncFunction("setMaxSelectableBitrate") { (nativeId: NativeId, maxSelectableBitrate: Int) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.maxSelectableBitrate = UInt(maxSelectableBitrate)
+        }.runOnQueue(.main)
+        AsyncFunction("getVolume") { (nativeId: NativeId) -> Int? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.volume
+        }.runOnQueue(.main)
+        AsyncFunction("currentTime") { (nativeId: NativeId, mode: String?) -> Double? in
+            let player = PlayerRegistry.getPlayer(nativeId: nativeId)
+            if let mode {
+                return player?.currentTime(RCTConvert.timeMode(mode))
+            }
+            return player?.currentTime
+        }.runOnQueue(.main)
+        AsyncFunction("isPlaying") { (nativeId: NativeId) -> Bool? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.isPlaying
+        }.runOnQueue(.main)
+        AsyncFunction("isPaused") { (nativeId: NativeId) -> Bool? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.isPaused
+        }.runOnQueue(.main)
+        AsyncFunction("duration") { (nativeId: NativeId) -> Double? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.duration
+        }.runOnQueue(.main)
+        AsyncFunction("isMuted") { (nativeId: NativeId) -> Bool? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.isMuted
+        }.runOnQueue(.main)
+        AsyncFunction("getTimeShift") { (nativeId: NativeId) -> Double? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.timeShift
+        }.runOnQueue(.main)
+        AsyncFunction("isLive") { (nativeId: NativeId) -> Bool? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.isLive
+        }.runOnQueue(.main)
+        AsyncFunction("getMaxTimeShift") { (nativeId: NativeId) -> Double? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.maxTimeShift
+        }.runOnQueue(.main)
+        AsyncFunction("getPlaybackSpeed") { (nativeId: NativeId) -> Float? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.playbackSpeed
+        }.runOnQueue(.main)
+        AsyncFunction("isAd") { (nativeId: NativeId) -> Bool? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.isAd
+        }.runOnQueue(.main)
+        AsyncFunction("canPlayAtPlaybackSpeed") { (nativeId: NativeId, playbackSpeed: Float) -> Bool? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.canPlay(atPlaybackSpeed: playbackSpeed)
+        }.runOnQueue(.main)
+        AsyncFunction("getAudioTrack") { (nativeId: NativeId) -> [String: Any]? in
+            RCTConvert.audioTrackJson(PlayerRegistry.getPlayer(nativeId: nativeId)?.audio)
+        }.runOnQueue(.main)
+        AsyncFunction("getAvailableAudioTracks") { (nativeId: NativeId) -> [[String: Any]] in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?
+                .availableAudio.compactMap { RCTConvert.audioTrackJson($0) } ?? []
+        }.runOnQueue(.main)
+        AsyncFunction("setAudioTrack") { (nativeId: NativeId, trackIdentifier: String) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.setAudio(trackIdentifier: trackIdentifier)
+        }.runOnQueue(.main)
+        AsyncFunction("getSubtitleTrack") { (nativeId: NativeId) -> [String: Any]? in
+            RCTConvert.subtitleTrackJson(PlayerRegistry.getPlayer(nativeId: nativeId)?.subtitle)
+        }.runOnQueue(.main)
+        AsyncFunction("getAvailableSubtitles") { (nativeId: NativeId) -> [[String: Any]] in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?
+                .availableSubtitles.compactMap { RCTConvert.subtitleTrackJson($0) } ?? []
+        }.runOnQueue(.main)
+        AsyncFunction("setSubtitleTrack") { (nativeId: NativeId, trackIdentifier: String?) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.setSubtitle(trackIdentifier: trackIdentifier)
+        }.runOnQueue(.main)
+
+        AsyncFunction("getVideoQuality") { (nativeId: NativeId) -> [String: Any]? in
+            RCTConvert.toJson(videoQuality: PlayerRegistry.getPlayer(nativeId: nativeId)?.videoQuality)
+        }.runOnQueue(.main)
+        AsyncFunction("getAvailableVideoQualities") { (nativeId: NativeId) -> [[String: Any]] in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?
+                .availableVideoQualities.compactMap { RCTConvert.toJson(videoQuality: $0) } ?? []
+        }.runOnQueue(.main)
+        AsyncFunction("getThumbnail") { (nativeId: NativeId, time: Double) -> [String: Any]? in
+            RCTConvert.toJson(thumbnail: PlayerRegistry.getPlayer(nativeId: nativeId)?.thumbnail(forTime: time))
+        }.runOnQueue(.main)
+        AsyncFunction("loadOfflineContent") { [weak self] (nativeId: NativeId, bridgeId: String, options: [String: Any]?) in // swiftlint:disable:this line_length
+            #if os(iOS)
+            guard let player = PlayerRegistry.getPlayer(nativeId: nativeId),
+                  let offlineModule = self?.appContext?.moduleRegistry.get(OfflineModule.self),
+                  let offlineContentManagerBridge = offlineModule.retrieve(bridgeId) else { return }
+            let optionsDictionary = options ?? [:]
+            let restrictedToAssetCache = optionsDictionary["restrictedToAssetCache"] as? Bool ?? true
+            let offlineSourceConfig = offlineContentManagerBridge.offlineContentManager.createOfflineSourceConfig(
+                restrictedToAssetCache: restrictedToAssetCache
+            )
+            guard let offlineSourceConfig else { return }
+            player.load(sourceConfig: offlineSourceConfig)
+            #endif
+        }.runOnQueue(.main)
+        AsyncFunction("scheduleAd") { (nativeId: NativeId, adItemJson: [String: Any]) in
+            guard let adItem = RCTConvert.adItem(adItemJson) else { return }
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.scheduleAd(adItem: adItem)
+        }.runOnQueue(.main)
+        AsyncFunction("isAirPlayActive") { (nativeId: NativeId) -> Bool? in
+            #if os(iOS)
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.isAirPlayActive
+            #else
+            nil
+            #endif
+        }.runOnQueue(.main)
+        AsyncFunction("isAirPlayAvailable") { (nativeId: NativeId) -> Bool? in
+            #if os(iOS)
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.allowsAirPlay
+            #else
+            nil
+            #endif
+        }.runOnQueue(.main)
+        AsyncFunction("isCastAvailable") { (nativeId: NativeId) -> Bool? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.isCastAvailable
+        }.runOnQueue(.main)
+        AsyncFunction("isCasting") { (nativeId: NativeId) -> Bool? in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.isCasting
+        }.runOnQueue(.main)
+        AsyncFunction("castVideo") { (nativeId: NativeId) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.castVideo()
+        }.runOnQueue(.main)
+        AsyncFunction("castStop") { (nativeId: NativeId) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.castStop()
+        }.runOnQueue(.main)
+        AsyncFunction("skipAd") { (nativeId: NativeId) in
+            PlayerRegistry.getPlayer(nativeId: nativeId)?.skipAd()
+        }.runOnQueue(.main)
+        AsyncFunction(
+            "initializeWithConfig"
+        ) { [weak self] (nativeId: NativeId, config: [String: Any]?, networkNativeId: NativeId?, _: String?) in // swiftlint:disable:this line_length
+            guard !PlayerRegistry.hasPlayer(nativeId: nativeId),
+                  let playerConfig = RCTConvert.playerConfig(config) else { return }
+            #if os(iOS)
             self?.setupRemoteControlConfig(playerConfig.remoteControlConfig)
-#endif
-            if let networkNativeId,
-               let networkConfig = self?.setupNetworkConfig(nativeId: networkNativeId) {
+            #endif
+            if let networkNativeId, let networkConfig = self?.setupNetworkConfig(nativeId: networkNativeId) {
                 playerConfig.networkConfig = networkConfig
             }
-            self?.players[nativeId] = PlayerFactory.create(playerConfig: playerConfig)
-        }
-    }
-
-    /**
-     Creates a new analytics enabled `Player` instance inside the internal players using the provided `config`
-     and `analyticsConfig` object.
-     - Parameter config: `PlayerConfig` object received from JS.
-     - Parameter analyticsConfig: `AnalyticsConfig` object received from JS.
-     */
-    @objc(initWithAnalyticsConfig:config:networkNativeId:analyticsConfig:)
-    func initWithAnalyticsConfig(
-        _ nativeId: NativeId,
-        config: Any?,
-        networkNativeId: NativeId?,
-        analyticsConfig: Any?
-    ) {
-        bridge.uiManager.addUIBlock { [weak self] _, _ in
-            let analyticsConfigJson = analyticsConfig
-            guard
-                self?.players[nativeId] == nil,
-                let playerConfig = RCTConvert.playerConfig(config),
-                let analyticsConfig = RCTConvert.analyticsConfig(analyticsConfig)
-            else {
-                return
-            }
-#if os(iOS)
+            let player = PlayerFactory.create(playerConfig: playerConfig)
+            PlayerRegistry.register(player: player, nativeId: nativeId)
+        }.runOnQueue(.main)
+        AsyncFunction(
+            "initializeWithAnalyticsConfig"
+        ) { [weak self] (nativeId: NativeId, analyticsConfig: [String: Any]?, config: [String: Any]?, networkNativeId: NativeId?, _: String?) in // swiftlint:disable:this line_length
+            guard !PlayerRegistry.hasPlayer(nativeId: nativeId),
+                  let playerConfig = RCTConvert.playerConfig(config),
+                  let analyticsConfig = RCTConvert.analyticsConfig(analyticsConfig) else { return }
+            #if os(iOS)
             self?.setupRemoteControlConfig(playerConfig.remoteControlConfig)
-#endif
-            if let networkNativeId,
-               let networkConfig = self?.setupNetworkConfig(nativeId: networkNativeId) {
+            #endif
+            if let networkNativeId, let networkConfig = self?.setupNetworkConfig(nativeId: networkNativeId) {
                 playerConfig.networkConfig = networkConfig
             }
-            let defaultMetadata = RCTConvert.analyticsDefaultMetadataFromAnalyticsConfig(analyticsConfigJson)
-            self?.players[nativeId] = PlayerFactory.create(
+            let defaultMetadata = RCTConvert.analyticsDefaultMetadataFromAnalyticsConfig(analyticsConfig)
+            let player = PlayerFactory.create(
                 playerConfig: playerConfig,
                 analyticsConfig: analyticsConfig,
                 defaultMetadata: defaultMetadata ?? DefaultMetadata()
             )
-        }
-    }
-
-    /**
-     Loads the given source configuration into `nativeId`'s `Player` object.
-     - Parameter nativeId: Target player.
-     - Parameter sourceNativeId: The `nativeId` of the `Source` object.
-     */
-    @objc(loadSource:sourceNativeId:)
-    func loadSource(_ nativeId: NativeId, sourceNativeId: NativeId) {
-        bridge.uiManager.addUIBlock { [weak self] _, _ in
-            guard
-                let player = self?.players[nativeId],
-                let source = self?.bridge[SourceModule.self]?.retrieve(sourceNativeId)
-            else {
-                return
-            }
+            PlayerRegistry.register(player: player, nativeId: nativeId)
+        }.runOnQueue(.main)
+        AsyncFunction("loadSource") { [weak self] (nativeId: NativeId, sourceNativeId: NativeId) in
+            guard let player = PlayerRegistry.getPlayer(nativeId: nativeId),
+                  let sourceModule = self?.appContext?.moduleRegistry.get(SourceModule.self),
+                  let source = sourceModule.retrieve(sourceNativeId) else { return }
             player.load(source: source)
-        }
+        }.runOnQueue(.main)
     }
 
     /**
@@ -704,11 +789,15 @@ public class PlayerModule: NSObject, RCTBridgeModule { // swiftlint:disable:this
         bridge.uiManager.addUIBlock { [weak self] _, _ in
             self?.players[nativeId]?.castStop()
         }
+    /// This needs to stay stable to maintain compatibility for cross-module access..
+    @objc
+    public func retrieve(_ nativeId: NativeId) -> Player? {
+        PlayerRegistry.getPlayer(nativeId: nativeId)
     }
 
     private func setupRemoteControlConfig(_ remoteControlConfig: RemoteControlConfig) {
         remoteControlConfig.prepareSource = { [weak self] _, sourceConfig in
-            guard let sourceModule = self?.bridge[SourceModule.self],
+            guard let sourceModule = self?.appContext?.moduleRegistry.get(SourceModule.self),
                   let sourceNativeId = sourceModule.nativeId(where: { $0.sourceConfig === sourceConfig }),
                   let castSourceConfig = sourceModule.retrieveCastSourceConfig(sourceNativeId) else {
                 return nil
@@ -719,96 +808,9 @@ public class PlayerModule: NSObject, RCTBridgeModule { // swiftlint:disable:this
     }
 
     private func setupNetworkConfig(nativeId: NativeId) -> NetworkConfig? {
-        guard let networkModule = bridge[NetworkModule.self],
-              let networkConfig = networkModule.retrieve(nativeId) else {
+        guard let networkModule = self.appContext?.moduleRegistry.get(NetworkModule.self) else {
             return nil
         }
-        return networkConfig
-    }
-
-    /**
-     Resolve `nativeId`'s current video quality.
-     - Parameter nativeId: Target player Id.
-     - Parameter resolver: JS promise resolver.
-     - Parameter rejecter: JS promise rejecter.
-     */
-    @objc(getVideoQuality:resolver:rejecter:)
-    func getVideoQuality(
-        _ nativeId: NativeId,
-        resolver resolve: @escaping RCTPromiseResolveBlock,
-        rejecter reject: @escaping RCTPromiseRejectBlock
-    ) {
-        bridge.uiManager.addUIBlock { [weak self] _, _ in
-            resolve(RCTConvert.toJson(videoQuality: self?.players[nativeId]?.videoQuality))
-        }
-    }
-
-    /**
-     Resolve `nativeId`'s current available video qualities.
-     - Parameter nativeId: Target player Id.
-     - Parameter resolver: JS promise resolver.
-     - Parameter rejecter: JS promise rejecter.
-     */
-    @objc(getAvailableVideoQualities:resolver:rejecter:)
-    func getAvailableVideoQualities(
-        _ nativeId: NativeId,
-        resolver resolve: @escaping RCTPromiseResolveBlock,
-        rejecter reject: @escaping RCTPromiseRejectBlock
-    ) {
-        bridge.uiManager.addUIBlock { [weak self] _, _ in
-            let videoQualitiesJson = self?.players[nativeId]?.availableVideoQualities.map {
-                RCTConvert.toJson(videoQuality: $0)
-            }
-            resolve(videoQualitiesJson ?? [])
-        }
-    }
-
-    /**
-     Resolve `nativeId`'s current playback speed.
-     - Parameter nativeId: Target player Id.
-     - Parameter resolver: JS promise resolver.
-     - Parameter rejecter: JS promise rejecter.
-     */
-    @objc(getPlaybackSpeed:resolver:rejecter:)
-    func getPlaybackSpeed(
-        _ nativeId: NativeId,
-        resolver resolve: @escaping RCTPromiseResolveBlock,
-        rejecter reject: @escaping RCTPromiseRejectBlock
-    ) {
-        bridge.uiManager.addUIBlock { [weak self] _, _ in
-            resolve(self?.players[nativeId]?.playbackSpeed)
-        }
-    }
-
-    /**
-     Sets playback speed for the player.
-     - Parameter nativeId: Target player Id.
-     - Parameter playbackSpeed: Float representing the playback speed level.
-     */
-    @objc(setPlaybackSpeed:playbackSpeed:)
-    func setPlaybackSpeed(_ nativeId: NativeId, playbackSpeed: NSNumber) {
-        bridge.uiManager.addUIBlock { [weak self] _, _ in
-            self?.players[nativeId]?.playbackSpeed = playbackSpeed.floatValue
-        }
-    }
-
-    /**
-     Resolve `nativeId`'s possibility to play the media at specified playback speed.
-     - Parameters:
-       - nativeId: Target player Id.
-       - playbackSpeed: The playback speed to check.
-       - resolver: JS promise resolver.
-       - rejecter: JS promise rejecter.
-     */
-    @objc(canPlayAtPlaybackSpeed:atPlaybackSpeed:resolver:rejecter:)
-    func canPlayAtPlaybackSpeed(
-        _ nativeId: NativeId,
-        atPlaybackSpeed playbackSpeed: NSNumber,
-        resolver resolve: @escaping RCTPromiseResolveBlock,
-        rejecter reject: @escaping RCTPromiseRejectBlock
-    ) {
-        bridge.uiManager.addUIBlock { [weak self] _, _ in
-            resolve(self?.players[nativeId]?.canPlay(atPlaybackSpeed: playbackSpeed.floatValue))
-        }
+        return networkModule.retrieve(nativeId)
     }
 }

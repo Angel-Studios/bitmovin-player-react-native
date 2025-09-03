@@ -1,3 +1,6 @@
+import { MediaTrackRole } from './mediaTrackRole';
+import { AudioQuality } from './media';
+
 /**
  * Represents an audio track for a video.
  */
@@ -22,4 +25,15 @@ export interface AudioTrack {
    * The IETF BCP 47 language tag associated with this track, e.g. `pt`, `en`, `es` etc.
    */
   language?: string;
+  /**
+   * An array of {@link MediaTrackRole} objects, each describing a specific role or characteristic of the audio track.
+   * This property provides a unified way to understand track purposes (e.g., for accessibility) across platforms.
+   */
+  roles?: MediaTrackRole[];
+  /**
+   * The AudioQuality array associated with this AudioTrack.
+   *
+   * @platform Android
+   */
+  qualities?: AudioQuality[];
 }
