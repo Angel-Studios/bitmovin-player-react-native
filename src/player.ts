@@ -465,7 +465,7 @@ export class Player extends NativeInstance<PlayerConfig> {
    *
    * @param qualityId value obtained from {@link VideoQuality}'s `id` property, which can be obtained via `Player.getAvailableVideoQualities()` to select a specific quality. To use automatic quality selection, 'auto' can be passed here.
    */
-  setVideoQuality = (qualityId: String): Promise<void> | void => {
+  setVideoQuality = (qualityId: string): Promise<void> | void => {
     if (Platform.OS !== 'android') {
       console.warn(
         `[Player ${this.nativeId}] Method setVideoQuality is not available for iOS and tvOS devices. Only Android devices.`
