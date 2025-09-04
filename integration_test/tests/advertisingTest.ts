@@ -31,9 +31,12 @@ export default (spec: TestScope) => {
           schedule: adItems,
         } as AdvertisingConfig;
         await startPlayerTest({ advertisingConfig }, async () => {
-          await callPlayerAndExpectEvents((player) => {
-            player.load(Sources.artOfMotionHls);
-          }, RepeatedEvent(EventType.AdScheduled, adItems.length));
+          await callPlayerAndExpectEvents(
+            (player) => {
+              player.load(Sources.artOfMotionHls);
+            },
+            RepeatedEvent(EventType.AdScheduled, adItems.length)
+          );
         });
       });
     });
@@ -41,9 +44,12 @@ export default (spec: TestScope) => {
       spec.it('emits AdScheduled events', async () => {
         await startPlayerTest({}, async () => {
           await loadSourceConfig(Sources.artOfMotionHls);
-          await callPlayerAndExpectEvents((player) => {
-            adItems.forEach((adItem) => player.scheduleAd(adItem));
-          }, RepeatedEvent(EventType.AdScheduled, adItems.length));
+          await callPlayerAndExpectEvents(
+            (player) => {
+              adItems.forEach((adItem) => player.scheduleAd(adItem));
+            },
+            RepeatedEvent(EventType.AdScheduled, adItems.length)
+          );
         });
       });
     });
