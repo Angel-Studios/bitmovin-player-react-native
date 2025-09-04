@@ -68,6 +68,7 @@ import com.bitmovin.player.reactnative.extensions.getArray
 import com.bitmovin.player.reactnative.extensions.getBooleanOrNull
 import com.bitmovin.player.reactnative.extensions.getDoubleOrNull
 import com.bitmovin.player.reactnative.extensions.getInt
+import com.bitmovin.player.reactnative.extensions.getIntOrNull
 import com.bitmovin.player.reactnative.extensions.getMap
 import com.bitmovin.player.reactnative.extensions.getName
 import com.bitmovin.player.reactnative.extensions.getString
@@ -81,6 +82,7 @@ import com.bitmovin.player.reactnative.extensions.withInt
 import com.bitmovin.player.reactnative.extensions.withMap
 import com.bitmovin.player.reactnative.extensions.withString
 import com.bitmovin.player.reactnative.extensions.withStringArray
+import com.bitmovin.player.reactnative.ui.SubtitleViewConfig
 import java.util.UUID
 
 /**

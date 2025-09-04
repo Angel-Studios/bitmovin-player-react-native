@@ -28,6 +28,7 @@ import com.bitmovin.player.api.ui.UiConfig
 import com.bitmovin.player.reactnative.converter.toJson
 import com.bitmovin.player.reactnative.converter.toUserInterfaceType
 import com.bitmovin.player.reactnative.ui.RNPictureInPictureHandler
+import com.bitmovin.player.reactnative.ui.SubtitleViewConfig
 import com.bitmovin.player.reactnative.util.NonFiniteSanitizer
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
