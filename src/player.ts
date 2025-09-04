@@ -59,7 +59,7 @@ export class Player extends NativeInstance<PlayerConfig> {
         this.network = new Network(this.config.networkConfig);
         await this.network.initialize();
       }
-      await this.#maybeInitDecoderConfig();
+      await this.maybeInitDecoderConfig();
       const analyticsConfig = this.config?.analyticsConfig;
       if (analyticsConfig) {
         await PlayerModule.initializeWithAnalyticsConfig(
@@ -521,7 +521,7 @@ export class Player extends NativeInstance<PlayerConfig> {
     );
   };
 
-  #maybeInitDecoderConfig(): void {
+  private maybeInitDecoderConfig = () => {
     if (this.config?.playbackConfig?.decoderConfig == null) {
       return;
     }
@@ -533,5 +533,5 @@ export class Player extends NativeInstance<PlayerConfig> {
       this.config.playbackConfig.decoderConfig
     );
     this.decoderConfig.initialize();
-  }
+  };
 }
