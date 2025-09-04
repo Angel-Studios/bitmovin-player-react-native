@@ -37,6 +37,9 @@ import expo.modules.kotlin.views.ExpoView
 
 @SuppressLint("ViewConstructor")
 class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+    var playerView: PlayerView? = null
+        private set
+    private var subtitleView: SubtitleView? = null
     private var playerContainer: FrameLayout? = null
     var enableBackgroundPlayback: Boolean = false
     private var scalingMode: ScalingMode? = null
@@ -167,25 +170,6 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
         activityLifecycle?.addObserver(activityLifecycleObserver)
     }
 
-    /**
-     * Relays the provided set of events, emitted by the player view, together with the associated name
-     * to the `eventOutput` callback.
-     */
-    private val viewEventRelay = EventRelay<PlayerView, Event>(EVENT_CLASS_TO_REACT_NATIVE_NAME_MAPPING_UI, ::emitEvent)
-
-    private var _playerView: PlayerView? = null
-        set(value) {
-            field = value
-            viewEventRelay.eventEmitter = field
-            playerEventRelay.eventEmitter = field?.player
-        }
-
-    /**
-     * Associated Bitmovin's `PlayerView`.
-     */
-    val playerView: PlayerView? get() = _playerView
-
-    private var subtitleView: SubtitleView? = null
     private val playerViewSourceRect = Rect()
 
     private val playerViewLayoutListener = OnLayoutChangeListener {
@@ -201,26 +185,6 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
             playerView?.getGlobalVisibleRect(playerViewSourceRect)
             applyPipConfig()
         }
-    }
-
-    /**
-     * Handy property accessor for `playerView`'s player instance.
-     */
-    var player: Player?
-        get() = playerView?.player
-        set(value) {
-            playerView?.player = value
-            playerEventRelay.eventEmitter = value
-        }
-
-    /**
-     * Configures the visual presentation and behaviour of the [playerView].
-     */
-    var config: RNPlayerViewConfigWrapper? = null
-        set(value) {
-            field = value
-            applySubtitleConfig()
-            applyPipConfig()
     }
 
     fun dispose() {
@@ -379,7 +343,7 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
         }
     }
 
-    private fun applySubtitleConfig() {
+        private fun applySubtitleConfig() {
         config?.subtitleViewConfig?.let {
             subtitleView?.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, it.paddingBottom)
         }
@@ -433,7 +397,7 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
         context.currentActivity?.let { activity ->
             if (!isPictureInPictureAvailable() ||
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-                _playerView == null
+                playerView == null
             ) {
                 return
             }
