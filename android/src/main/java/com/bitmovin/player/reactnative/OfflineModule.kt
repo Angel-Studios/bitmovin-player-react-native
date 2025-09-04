@@ -31,18 +31,6 @@ class OfflineModule : Module() {
             offlineContentManagerBridges.clear()
         }
 
-        override fun invalidate() {
-            super.invalidate()
-            context.runOnUiQueueThread {
-                offlineContentManagerBridges.keys.forEach { nativeId ->
-                    getOfflineContentManagerBridgeOrNull(nativeId)?.let { offlineContentManagerBridge ->
-                        offlineContentManagerBridge.release()
-                        offlineContentManagerBridges.remove(nativeId)
-                    }
-                }
-            }
-        }
-
         AsyncFunction("initializeWithConfig") { nativeId: NativeId, config: Map<String, Any?>?, drmNativeId: NativeId? ->
             if (offlineContentManagerBridges.containsKey(nativeId)) {
                 throw OfflineException.ManagerAlreadyExists(nativeId)

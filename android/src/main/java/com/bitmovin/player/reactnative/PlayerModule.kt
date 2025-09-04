@@ -38,18 +38,6 @@ class PlayerModule : Module() {
             PlayerRegistry.clear()
         }
 
-        override fun invalidate() {
-            super.invalidate()
-            context.runOnUiQueueThread {
-                players.keys.forEach { nativeId ->
-                    getPlayerOrNull(nativeId)?.let { player ->
-                        player.destroy()
-                        players.remove(nativeId)
-                    }
-                }
-            }
-        }
-
         AsyncFunction("play") { nativeId: NativeId ->
             val player = PlayerRegistry.getPlayer(nativeId)
             player?.play()

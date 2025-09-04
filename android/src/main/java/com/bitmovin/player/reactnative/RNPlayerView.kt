@@ -26,7 +26,6 @@ import com.bitmovin.player.api.ui.PlayerViewConfig
 import com.bitmovin.player.api.ui.ScalingMode
 import com.bitmovin.player.api.ui.UiConfig
 import com.bitmovin.player.reactnative.converter.toJson
-import com.bitmovin.player.reactnative.ui.SubtitleViewConfig
 import com.bitmovin.player.reactnative.converter.toUserInterfaceType
 import com.bitmovin.player.reactnative.ui.RNPictureInPictureHandler
 import com.bitmovin.player.reactnative.util.NonFiniteSanitizer
@@ -37,9 +36,6 @@ import expo.modules.kotlin.views.ExpoView
 
 @SuppressLint("ViewConstructor")
 class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
-    var playerView: PlayerView? = null
-        private set
-    private var subtitleView: SubtitleView? = null
     private var playerContainer: FrameLayout? = null
     var enableBackgroundPlayback: Boolean = false
     private var scalingMode: ScalingMode? = null
@@ -224,7 +220,7 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
             field = value
             applySubtitleConfig()
             applyPipConfig()
-        }
+    }
 
     fun dispose() {
         clearPipAutoEnter()
@@ -388,7 +384,6 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
         }
     }
 
-    private var isCurrentActivityInPictureInPictureMode: Boolean = isInPictureInPictureMode()
     private var isPictureInPictureAutoEnterEnabled: Boolean = false
 
     private fun isPictureInPictureAvailable(): Boolean {
@@ -478,12 +473,14 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
 
     private fun isInPictureInPictureMode(): Boolean {
         val activity = appContext.activityProvider?.currentActivity ?: return false
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isPictureInPictureAvailable()) {
+        return if (isPictureInPictureAvailable()) {
             activity.isInPictureInPictureMode
         } else {
             false
         }
     }
+
+    private var isCurrentActivityInPictureInPictureMode: Boolean = isInPictureInPictureMode()
 
     /**
      * Called whenever this view's activity configuration changes.
