@@ -10,8 +10,8 @@ import com.bitmovin.player.ui.DefaultPictureInPictureHandler
 private const val TAG = "RNPiPHandler"
 
 class RNPictureInPictureHandler(
-    activity: Activity,
-    player: Player,
+    private val activity: Activity,
+    private val player: Player,
 ) : DefaultPictureInPictureHandler(activity, player) {
     // Current PiP implementation on the native side requires playerView.exitPictureInPicture() to be called
     // for `PictureInPictureExit` event to be emitted.

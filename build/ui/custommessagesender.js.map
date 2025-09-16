@@ -1,0 +1,1 @@
+{"version":3,"file":"custommessagesender.js","sourceRoot":"","sources":["../../src/ui/custommessagesender.ts"],"names":[],"mappings":"","sourcesContent":["/** @internal */\nexport interface CustomMessageSender {\n  sendMessage(message: string, data: string | undefined): void;\n}\n"]}

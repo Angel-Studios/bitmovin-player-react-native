@@ -1,0 +1,1 @@
+{"version":3,"file":"AudioSessionModule.d.ts","sourceRoot":"","sources":["../../src/modules/AudioSessionModule.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAuB,MAAM,mBAAmB,CAAC;AAGtE,MAAM,MAAM,wBAAwB,GAAG,MAAM,CAAC,MAAM,EAAE,GAAG,CAAC,CAAC;AAE3D,OAAO,OAAO,kBAAmB,SAAQ,YAAY,CAAC,wBAAwB,CAAC;IAC7E,WAAW,CAAC,QAAQ,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC;CAC7C;;AAGD,wBAES"}

@@ -1,6 +1,103 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.0] - 2025-09-03
+
+### Changed
+
+- Update Bitmovin's native Android SDK version to `3.123.0`
+- Update Bitmovin's native iOS SDK version to `3.94.1`
+
+### Fixed
+
+- Crash when using `react-native-reanimated` along with `bitmovin-player-react-native` and playing a live stream
+- Expo config plugin feature configurations taking no effect
+- Example application crash on tvOS simulator
+
+## [1.0.0] - 2025-08-04
+
+### Breaking Change
+
+- Introduction of Expo SDK support. Upgrading requires following the [Migration Guide](https://developer.bitmovin.com/playback/docs/react-native-migrating-to-v1).
+
+### Added
+
+- React Native New Architecture Support
+- Expo Config Plugin to manage native configuration from `app.config.ts`.
+- Automatic configuration for Google Cast, Offline, Picture-in-Picture, AirPlay, and Background Playback through Expo plugin.
+
+### Changed
+
+- Minimum iOS/tvOS version is now 15.1+ (was 14.0+). Due to a transient React Native minimum [iOS/tvOS version change](https://github.com/react-native-community/discussions-and-proposals/discussions/812).
+- Minimum Android SDK version is now 24 (was 21). Due to a transient React Native minimum [Android version change](https://github.com/react-native-community/discussions-and-proposals/discussions/802).
+- Native setup is now automated through Expo SDK - manual configuration is no longer required for v1.0.0+.
+
+## [0.44.0] - 2025-07-25
+
+### Changed
+
+- Update Bitmovin's native Android SDK version to `3.118.0`
+- Update Bitmovin's native iOS SDK version to `3.93.0`
+- Android: Add null safety checks to `ReadableMap`/`ReadableArray` calls in `JsonConverter`
+
+### Removed
+
+- Android: `TweaksConfig.shouldApplyTtmlRegionWorkaround` as support for TTML attributes defined in a Region's Style has improved
+
+## [0.43.0] - 2025-06-30
+
+### Added
+
+- Android: `AudioTrack.qualities`, providing the `AudioQuality`s associated with the `AudioTrack`
+
+### Changed
+
+- Update Bitmovin's native Android SDK version to `3.115.0`
+- Update Bitmovin's native iOS SDK version to `3.92.0`
+
+## [0.42.0] - 2025-06-02
+
+### Changed
+
+- Update Bitmovin's native Android SDK version to `3.112.0`
+- Update Bitmovin's native iOS SDK version to `3.90.0`
+
+### Added
+
+- `SubtitleTrack.roles` and `AudioTrack.roles` to list the associated `MediaTrackRole` information
+
+## [0.41.0] - 2025-04-02
+
+### Changed
+
+- Update react-native-screens to v3.35.0 for Android SDK version compatibility
+
+### Added
+
+- Android: `DecoderConfig.decoderPriorityProvider`, a callback interface to specify which decoder implementation the Player should use to decode the media
+
+### Changed
+
+- Update IMA SDK dependency on Android to `3.35.1`
+
+## [0.40.0] - 2025-03-20
+
+### Changed
+
+- Update Bitmovin's native Android SDK version to `3.104.2`
+- Update Bitmovin's native iOS SDK version to `3.85.2`
+
+## [0.39.0] - 2025-03-07
+
+### Added
+
+- `CueEnterEvent.image` and `CueExitEvent.image` to expose the Base64 encoded image data URI of the cue when available
+
+## [0.38.0] - 2025-02-28
+
+### Changed
+
+- Update Bitmovin's native Android SDK version to `3.104.1`
+- Update Bitmovin's native iOS SDK version to `3.85.0`
 
 ## [0.37.0] - 2025-01-17
 

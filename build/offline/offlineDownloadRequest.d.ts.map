@@ -1,0 +1,1 @@
+{"version":3,"file":"offlineDownloadRequest.d.ts","sourceRoot":"","sources":["../../src/offline/offlineDownloadRequest.ts"],"names":[],"mappings":"AAAA;;;GAGG;AACH,MAAM,WAAW,sBAAsB;IACrC;;OAEG;IACH,cAAc,CAAC,EAAE,MAAM,CAAC;IAExB;;OAEG;IACH,cAAc,CAAC,EAAE,MAAM,EAAE,CAAC;IAE1B;;OAEG;IACH,aAAa,CAAC,EAAE,MAAM,EAAE,CAAC;CAC1B"}

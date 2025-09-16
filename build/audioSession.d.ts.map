@@ -1,0 +1,1 @@
+{"version":3,"file":"audioSession.d.ts","sourceRoot":"","sources":["../src/audioSession.ts"],"names":[],"mappings":"AAEA;;;;;;;;;;;;;;;GAeG;AACH,MAAM,MAAM,oBAAoB,GAC5B,SAAS,GACT,YAAY,GACZ,eAAe,GACf,UAAU,GACV,QAAQ,GACR,aAAa,CAAC;AAElB;;;;;GAKG;AACH,eAAO,MAAM,YAAY;IACvB;;;;;OAKG;4BAC2B,oBAAoB,KAAG,OAAO,CAAC,IAAI,CAAC;CAKnE,CAAC"}
