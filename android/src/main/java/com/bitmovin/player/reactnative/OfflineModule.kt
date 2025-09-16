@@ -28,6 +28,13 @@ class OfflineModule : Module() {
 
         OnDestroy {
             // Clean up offline content managers
+            offlineContentManagerBridges.values.toList().forEach { bridge ->
+                try {
+                    bridge.release()
+                } catch (e: Exception) {
+                    // Log but don't crash on cleanup
+                }
+            }
             offlineContentManagerBridges.clear()
         }
 

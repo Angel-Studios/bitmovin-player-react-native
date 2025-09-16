@@ -3,6 +3,7 @@ package com.bitmovin.player.reactnative
 import com.bitmovin.player.api.buffer.BufferLevel
 import com.bitmovin.player.api.ui.PlayerViewConfig
 import com.bitmovin.player.api.ui.StyleConfig
+import com.bitmovin.player.reactnative.ui.SubtitleViewConfig
 
 /**
  * Represents the user interface type for the React Native player.
@@ -17,6 +18,7 @@ enum class UserInterfaceType {
  */
 data class PictureInPictureConfig(
     val isEnabled: Boolean = false,
+    val shouldEnterOnBackground: Boolean = false,
 )
 
 /**
@@ -25,6 +27,7 @@ data class PictureInPictureConfig(
 data class RNPlayerViewConfigWrapper(
     val playerViewConfig: PlayerViewConfig,
     val pictureInPictureConfig: PictureInPictureConfig? = null,
+    val subtitleViewConfig: SubtitleViewConfig?,
 )
 
 /**

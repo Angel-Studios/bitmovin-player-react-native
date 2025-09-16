@@ -96,7 +96,7 @@ export class Player extends NativeInstance<PlayerConfig> {
       this.isDestroyed = true;
     }
 
-    return Promise.resolve()
+    return Promise.resolve();
   };
 
   /**
@@ -123,7 +123,7 @@ export class Player extends NativeInstance<PlayerConfig> {
   /**
    * Loads the given {@link Source} into the player.
    */
-  loadSource = async (source: Source): Promise<void> | void => {
+  loadSource = async (source: Source): Promise<void> => {
     this.source = source;
     await source.initialize();
     return PlayerModule.loadSource(this.nativeId, source.nativeId);

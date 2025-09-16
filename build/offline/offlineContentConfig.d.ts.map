@@ -1,0 +1,1 @@
+{"version":3,"file":"offlineContentConfig.d.ts","sourceRoot":"","sources":["../../src/offline/offlineContentConfig.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,oBAAoB,EAAE,MAAM,mBAAmB,CAAC;AACzD,OAAO,EAAE,YAAY,EAAE,MAAM,WAAW,CAAC;AAEzC;;;GAGG;AACH,MAAM,WAAW,oBAAqB,SAAQ,oBAAoB;IAChE;;;OAGG;IACH,UAAU,EAAE,MAAM,CAAC;IACnB;;OAEG;IACH,YAAY,EAAE,YAAY,CAAC;CAC5B"}

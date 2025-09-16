@@ -1,0 +1,1 @@
+{"version":3,"file":"bufferConfig.d.ts","sourceRoot":"","sources":["../src/bufferConfig.ts"],"names":[],"mappings":"AAAA;;GAEG;AACH,MAAM,WAAW,qBAAqB;IACpC;;;;;;;OAOG;IACH,eAAe,CAAC,EAAE,MAAM,CAAC;CAC1B;AAED;;GAEG;AACH,MAAM,WAAW,YAAY;IAC3B;;OAEG;IACH,aAAa,CAAC,EAAE,qBAAqB,CAAC;IACtC;;;;;;;OAOG;IACH,gBAAgB,CAAC,EAAE,MAAM,CAAC;IAC1B;;;;;;;OAOG;IACH,gBAAgB,CAAC,EAAE,MAAM,CAAC;CAC3B"}

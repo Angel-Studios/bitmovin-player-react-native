@@ -28,7 +28,6 @@ import com.bitmovin.player.api.ui.UiConfig
 import com.bitmovin.player.reactnative.converter.toJson
 import com.bitmovin.player.reactnative.converter.toUserInterfaceType
 import com.bitmovin.player.reactnative.ui.RNPictureInPictureHandler
-import com.bitmovin.player.reactnative.ui.SubtitleViewConfig
 import com.bitmovin.player.reactnative.util.NonFiniteSanitizer
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
@@ -46,6 +45,7 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
     private var requestedFullscreenValue: Boolean? = null
     private var requestedPictureInPictureValue: Boolean? = null
     private var fullscreenBridgeId: NativeId? = null
+    private var pictureInPictureConfig: PictureInPictureConfig? = null
 
     private val playerViewSourceRect = Rect()
     private val playerViewLayoutListener = OnLayoutChangeListener {
@@ -131,16 +131,6 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
 
     private var playerInMediaSessionService: Player? = null
 
-    /**
-     * Configures the visual presentation and behaviour of the [playerView].
-     */
-    var config: RNPlayerViewConfigWrapper? = null
-        set(value) {
-            field = value
-            applySubtitleConfig()
-            applyPipConfig()
-        }
-
     private val activityLifecycleObserver = object : DefaultLifecycleObserver {
         override fun onStart(owner: LifecycleOwner) {
             if (playerInMediaSessionService != null) {
@@ -182,6 +172,16 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
         }
     }
 
+    private val viewAttachListener = object : OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View) {
+            // do nothing
+        }
+
+        override fun onViewDetachedFromWindow(v: View) {
+            clearPipAutoEnter()
+        }
+    }
+
     private val activityLifecycle: Lifecycle? =
         (appContext.activityProvider?.currentActivity as? LifecycleOwner)?.lifecycle
 
@@ -194,11 +194,14 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
         viewTreeObserver.addOnGlobalLayoutListener { requestLayout() }
 
         activityLifecycle?.addObserver(activityLifecycleObserver)
+        addOnAttachStateChangeListener(viewAttachListener)
     }
 
     fun dispose() {
         clearPipAutoEnter()
+        removeOnAttachStateChangeListener(viewAttachListener)
         activityLifecycle?.removeObserver(activityLifecycleObserver)
+        playerView?.removeOnLayoutChangeListener(playerViewLayoutListener)
         playerView?.onDestroy()
         playerView = null
         playerContainer?.let { container ->
@@ -250,7 +253,7 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
         this.playerView = playerView
         this.playerContainer = newContainer
 
-        this.playerView.addOnLayoutChangeListener(playerViewLayoutListener)
+        playerView.addOnLayoutChangeListener(playerViewLayoutListener)
 
         scalingMode?.let {
             playerView.scalingMode = it
@@ -312,6 +315,9 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
 
             val isPictureInPictureEnabled = isPictureInPictureEnabledOnPlayer ||
                 playerViewConfigWrapper?.pictureInPictureConfig?.isEnabled == true
+
+            pictureInPictureConfig = playerViewConfigWrapper?.pictureInPictureConfig
+
             if (isPictureInPictureEnabled) {
                 newPlayerView.setPictureInPictureHandler(RNPictureInPictureHandler(currentActivity, player))
             }
@@ -323,6 +329,9 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
                 appContext.activityProvider?.currentActivity?.let { activity ->
                     val subtitleView = SubtitleView(activity)
                     subtitleView.setPlayer(player)
+                    playerViewConfigWrapper?.subtitleViewConfig?.let {
+                        subtitleView.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, it.paddingBottom)
+                    }
                     setSubtitleView(subtitleView)
                 }
             }
@@ -340,7 +349,6 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
             (currentSubtitleView.parent as? ViewGroup)?.removeView(currentSubtitleView)
         }
         this.subtitleView = subtitleView
-        applySubtitleConfig()
 
         // Add SubtitleView to the playerContainer instead of the ExpoView
         // This ensures it's on top of the PlayerView
@@ -351,12 +359,6 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
             )
             container.addView(subtitleView, layoutParams)
             subtitleView.bringToFront() // Ensure proper z-ordering
-        }
-    }
-
-    private fun applySubtitleConfig() {
-        config?.subtitleViewConfig?.let {
-            subtitleView?.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, it.paddingBottom)
         }
     }
 
@@ -380,7 +382,7 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
     @RequiresApi(Build.VERSION_CODES.O)
     private fun pictureInPictureParams(): PictureInPictureParams.Builder {
         val aspectRatio =
-            player?.playbackVideoData
+            playerView?.player?.playbackVideoData
                 ?.let { Rational(it.width, it.height) }
                 ?.let { rational ->
                     val ratio = rational.toDouble()
@@ -407,16 +409,16 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
     }
 
     private fun applyPipConfig() {
-        context.currentActivity?.let { activity ->
+        appContext.activityProvider?.currentActivity?.let { activity ->
             if (!isPictureInPictureAvailable() ||
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-                _playerView == null
+                playerView == null
             ) {
                 return
             }
 
-            val isAutoEnterConfigDisabled = config?.pictureInPictureConfig?.isEnabled != true ||
-                config?.pictureInPictureConfig?.shouldEnterOnBackground != true
+            val isAutoEnterConfigDisabled = pictureInPictureConfig?.isEnabled != true ||
+                pictureInPictureConfig?.shouldEnterOnBackground != true
 
             if (isAutoEnterConfigDisabled) {
                 if (isPictureInPictureAutoEnterEnabled) {
@@ -443,7 +445,7 @@ class RNPlayerView(context: Context, appContext: AppContext) : ExpoView(context,
             return
         }
 
-        context.currentActivity?.setPictureInPictureParams(
+        appContext.activityProvider?.currentActivity?.setPictureInPictureParams(
             PictureInPictureParams.Builder().setAutoEnterEnabled(false).build(),
         )
         isPictureInPictureAutoEnterEnabled = false

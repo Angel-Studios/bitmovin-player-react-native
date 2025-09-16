@@ -1,0 +1,1 @@
+{"version":3,"file":"player.d.ts","sourceRoot":"","sources":["../../src/analytics/player.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,UAAU,CAAC;AAG5C;;;GAGG;AACH,qBAAa,YAAY;IACvB;;OAEG;IACH,QAAQ,EAAE,MAAM,CAAC;gBAEL,QAAQ,EAAE,MAAM;IAI5B;;;OAGG;IACH,mBAAmB,GAAU,YAAY,gBAAgB,mBAEvD;IAEF;;;;OAIG;IACH,SAAS,QAAa,OAAO,CAAC,MAAM,GAAG,IAAI,CAAC,CAE1C;CACH"}
