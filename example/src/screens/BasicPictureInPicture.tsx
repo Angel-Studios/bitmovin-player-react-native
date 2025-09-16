@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Platform, StyleSheet, View, ViewProps } from 'react-native';
+import type { JSX } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   Event,
@@ -54,12 +55,12 @@ export default function BasicPictureInPicture({
       player.load({
         url:
           Platform.OS === 'ios'
-            ? 'https://cdn.bitmovin.com/content/assets/MI201109210084/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8'
-            : 'https://cdn.bitmovin.com/content/assets/MI201109210084/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd',
+            ? 'https://cdn.bitmovin.com/content/internal/assets/MI201109210084/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8'
+            : 'https://cdn.bitmovin.com/content/internal/assets/MI201109210084/mpds/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.mpd',
         type: Platform.OS === 'ios' ? SourceType.HLS : SourceType.DASH,
         title: 'Art of Motion',
         poster:
-          'https://cdn.bitmovin.com/content/assets/MI201109210084/poster.jpg',
+          'https://cdn.bitmovin.com/content/internal/assets/MI201109210084/poster.jpg',
       });
       return () => {
         player.destroy();
@@ -73,16 +74,17 @@ export default function BasicPictureInPicture({
 
   useEffect(() => {
     navigation.setOptions({
-      headerShown: !renderOnlyPlayerView,
+      headerShown: !Platform.isTV && !renderOnlyPlayerView,
       // eslint-disable-next-line react/no-unstable-nested-components
-      headerRight: () => (
-        <Button
-          title={isInPictureInPicture ? 'Exit PiP' : 'Enter PiP'}
-          onPress={() =>
-            setIsPictureInPictureRequested(() => !isInPictureInPicture)
-          }
-        />
-      ),
+      headerRight: () =>
+        Platform.isTV ? undefined : (
+          <Button
+            title={isInPictureInPicture ? 'Exit PiP' : 'Enter PiP'}
+            onPress={() =>
+              setIsPictureInPictureRequested(() => !isInPictureInPicture)
+            }
+          />
+        ),
     });
   }, [navigation, isInPictureInPicture, renderOnlyPlayerView]);
 
